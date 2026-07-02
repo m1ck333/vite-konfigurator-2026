@@ -1,0 +1,35 @@
+.radioInput {
+  display: none;
+}
+
+.radioLabel {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.radioCustom {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  @apply border-primary-dark-accent bg-white;
+}
+
+.radioInput + .radioLabel .radioCustom {
+  @apply bg-primary-light;
+}
+
+.radioInput:hover + .radioLabel .radioCustom {
+  @apply bg-primary-grey-light;
+  transition: background-color 550ms ease-in-out;
+}
+
+.radioInput:checked + .radioLabel .radioCustom {
+  @apply bg-primary-green border border-white;
+  background-repeat: no-repeat;
+  background-position: center;
+  /* transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out; */
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='5' cy='5' r='5' fill='white'/%3E%3C/svg%3E");
+}

@@ -1,0 +1,23 @@
+.imageStyle {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(100% - 40px);
+  object-fit: contain;
+  margin: auto;
+}
+
+.textStyle {
+  margin-top: auto;
+  width: 100%;
+  font-size: 0.75rem;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+  align-items: start;
+}
