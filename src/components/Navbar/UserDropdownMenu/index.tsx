@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGear, faRightToBracket } from "@fortawesome/free-solid-svg-icons";
+import { faGear } from "@fortawesome/free-solid-svg-icons";
 
 import { AppDispatch } from "../../../app/store";
 import {
@@ -99,9 +99,9 @@ const UserDropdownMenu: React.FC<UserDropdownMenuProps> = ({
   ) : (
     <span
       onClick={() => setIsLoginModalShown(true)}
-      className="flex items-center justify-center w-9 h-9 rounded-lg cursor-pointer text-primary-grey-dark hover:bg-primary-grey-lightest hover:text-primary-green transition-colors"
+      className="flex items-center justify-center h-9 px-3.5 rounded-full cursor-pointer text-sm font-bold tracking-wide text-primary-grey-dark hover:bg-primary-grey-lightest hover:text-primary-green transition-colors"
     >
-      <FontAwesomeIcon icon={faRightToBracket} size="lg" />
+      B2B
     </span>
   );
 };
