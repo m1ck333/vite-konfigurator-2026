@@ -7,6 +7,13 @@ export default defineConfig(({ mode }) => {
   // REACT_APP_* names without rewriting every `process.env.REACT_APP_*` usage.
   const env = loadEnv(mode, process.cwd(), "");
 
+  // Prefer real build-env vars (DigitalOcean App Platform / CI inject these into
+  // process.env, which loadEnv does NOT read), then fall back to .env files
+  // (local dev), then a final default.
+  const apiUrl = process.env.REACT_APP_API_URL ?? env.REACT_APP_API_URL ?? "";
+  const nodeEnv =
+    process.env.REACT_APP_NODE_ENV ?? env.REACT_APP_NODE_ENV ?? mode;
+
   return {
     plugins: [react()],
     server: {
@@ -46,12 +53,8 @@ export default defineConfig(({ mode }) => {
     },
     // Shim CRA-style env access so the ported logic compiles unchanged.
     define: {
-      "process.env.REACT_APP_API_URL": JSON.stringify(
-        env.REACT_APP_API_URL ?? ""
-      ),
-      "process.env.REACT_APP_NODE_ENV": JSON.stringify(
-        env.REACT_APP_NODE_ENV ?? mode
-      ),
+      "process.env.REACT_APP_API_URL": JSON.stringify(apiUrl),
+      "process.env.REACT_APP_NODE_ENV": JSON.stringify(nodeEnv),
     },
   };
 });
