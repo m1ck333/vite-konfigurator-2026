@@ -30,7 +30,8 @@ const EquipmentGroup: React.FC<EquipmentGroupProps> = ({
 
   const getImageUrl = () => {
     if (groupImg) {
-      return `${process.env.REACT_APP_API_URL}/${groupImg}`;
+      const path = groupImg.includes("storage") ? groupImg : `storage/${groupImg}`;
+      return `${process.env.REACT_APP_API_URL}/${path}`;
     }
     return `${process.env.REACT_APP_API_URL}/storage/thumbnails/equipment/${type}/${groupName}.png`;
   };
