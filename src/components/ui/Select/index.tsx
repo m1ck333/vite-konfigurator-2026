@@ -51,9 +51,14 @@ const Select: React.FC<SelectProps> = ({
 
   useEffect(() => {
     if (!open) return;
-    const close = () => setOpen(false);
-    window.addEventListener("scroll", close, true);
-    return () => window.removeEventListener("scroll", close, true);
+    // Close when an OUTER scroll container moves (so the dropdown doesn't
+    // detach from its trigger) — but ignore scrolling inside the list itself.
+    const onScroll = (e: Event) => {
+      if (wrapperRef.current?.contains(e.target as Node)) return;
+      setOpen(false);
+    };
+    window.addEventListener("scroll", onScroll, true);
+    return () => window.removeEventListener("scroll", onScroll, true);
   }, [open]);
 
   return (
