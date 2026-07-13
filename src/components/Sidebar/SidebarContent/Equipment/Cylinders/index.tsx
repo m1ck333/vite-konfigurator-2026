@@ -23,7 +23,11 @@ const Cylinders = ({
       onClick={() => handleItemSelect(item.id, item.name, item.equipment_code)}
     >
       <img
-        src={`${process.env.REACT_APP_API_URL}/${item.thumbnail}`}
+        src={`${process.env.REACT_APP_API_URL}/${
+          item.thumbnail?.includes("storage")
+            ? item.thumbnail
+            : `storage/${item.thumbnail}`
+        }`}
         alt={item.equipment_code}
         className="h-24 w-auto object-contain"
       />

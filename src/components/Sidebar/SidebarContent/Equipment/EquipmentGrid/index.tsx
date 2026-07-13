@@ -33,7 +33,12 @@ const EquipmentGrid: React.FC<EquipmentGridProps> = ({
     >
       <img
         className={styles.imageStyle}
-        src={`${process.env.REACT_APP_API_URL}/${item.thumbnail}`}
+        src={`${process.env.REACT_APP_API_URL}/${
+          typeof item.thumbnail === "string" &&
+          item.thumbnail.includes("storage")
+            ? item.thumbnail
+            : `storage/${item.thumbnail}`
+        }`}
         alt={item.code}
       />
 
