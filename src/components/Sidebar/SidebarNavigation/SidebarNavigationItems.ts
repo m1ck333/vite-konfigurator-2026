@@ -2,7 +2,6 @@ import TypeIcon from "../../../assets/images/sidebar-icons/type.png";
 import SystemIcon from "../../../assets/images/sidebar-icons/system.png";
 import ColorIcon from "../../../assets/images/sidebar-icons/color.png";
 import InsertDoorIcon from "../../../assets/images/sidebar-icons/insert-door.png";
-import HouseColorIcon from "../../../assets/images/sidebar-icons/house-color.png";
 import GlassIcon from "../../../assets/images/sidebar-icons/glass.png";
 import EquipmentIcon from "../../../assets/images/sidebar-icons/equipment.png";
 import DoorModelIcon from "../../../assets/images/sidebar-icons/door-model.png";
@@ -21,7 +20,6 @@ const items = [
   { icon: GlassIcon, text: "glass" as activeSidebarItem },
   { icon: EquipmentIcon, text: "equipment" as activeSidebarItem },
   { icon: DoorLockIcon, text: "lock" as activeSidebarItem },
-  { icon: HouseColorIcon, text: "house-colors" as activeSidebarItem },
   { icon: InsertDoorIcon, text: "insert-the-door" as activeSidebarItem },
   { icon: Document, text: "print-query" as activeSidebarItem },
 ];
