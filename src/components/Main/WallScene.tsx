@@ -41,7 +41,7 @@ const RIGHT_W_PCT = 333 / SCENE_W * 100; // 23.65%
 const CORNICE_PCT = 96 / SCENE_H * 100; // fixed top band → 12.5%
 const PANEL_TOP_PCT = CORNICE_PCT; // panels start just below the cornice
 const PANEL_H_PCT = 100 - CORNICE_PCT; // 87.5%
-const FLOOR_TOP_PCT = 660 / SCENE_H * 100; // fixed paving band starts here → 85.94%
+const FLOOR_TOP_PCT = 684 / SCENE_H * 100; // fixed paving starts at the wall-floor junction → 89.06%
 const WALL_WHITE = "#EBEBEB"; // the normalised wall tone → seamless behind the panels
 
 // NOTE: `interior`/`doorType` are accepted (door face flips via the render) but the slide engine
