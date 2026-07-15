@@ -8,29 +8,39 @@ interface WallSceneProps {
   isUpdating?: boolean;
 }
 
-// Door-opening rectangle within each wall image, as % of the wall (left, top, width, height).
-// The configured door is placed object-contain + bottom-anchored inside this box so it always
-// fits and sits on the threshold. Tune these if a wall image is swapped.
-const OPENINGS = {
-  exterior: { left: 28.4, top: 35.6, width: 42.6, height: 41.5 },
-  interior: { left: 27.7, top: 26.0, width: 43.6, height: 59.0 },
+// Per-wall config. The door is sized by HEIGHT (fills the opening's height) with its NATURAL
+// width, centered on centerX and resting on the threshold (bottom). So a thin door is tall+narrow,
+// a double is tall+wide — the dark opening behind absorbs the rest. All values are % of the wall.
+const WALLS = {
+  // wide landscape entrance with a big dark opening (fits double + side panels + transom)
+  exterior: { src: exteriorWall, aspect: 1408 / 768, door: { bottom: 10.2, height: 59.2, centerX: 50 } },
+  // portrait interior placeholder (pending a matching wide landscape interior)
+  interior: { src: interiorWall, aspect: 768 / 1376, door: { bottom: 14.2, height: 61.0, centerX: 49.5 } },
 };
 
 const WallScene: React.FC<WallSceneProps> = ({ doorImage, interior, isUpdating }) => {
-  const wall = interior ? interiorWall : exteriorWall;
-  const o = interior ? OPENINGS.interior : OPENINGS.exterior;
+  const w = interior ? WALLS.interior : WALLS.exterior;
   return (
-    <div className="relative h-[92vh] max-h-[1000px] aspect-[768/1376] rounded-2xl overflow-hidden shadow-2xl bg-black/5">
-      <img src={wall} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" draggable={false} />
+    <div
+      className="relative rounded-2xl overflow-hidden shadow-2xl bg-black/5"
+      style={{ aspectRatio: String(w.aspect), height: "min(84vh, 44rem)", maxWidth: "92vw" }}
+    >
+      <img src={w.src} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" draggable={false} />
       {doorImage && (
         <img
           src={doorImage}
           alt="Configured door"
           draggable={false}
-          className={`door-image absolute object-contain object-bottom transition-[filter,opacity] duration-200 ${
+          className={`door-image absolute transition-[filter,opacity] duration-200 ${
             isUpdating ? "blur-[2px] opacity-85" : ""
           }`}
-          style={{ left: `${o.left}%`, top: `${o.top}%`, width: `${o.width}%`, height: `${o.height}%` }}
+          style={{
+            height: `${w.door.height}%`,
+            width: "auto",
+            bottom: `${w.door.bottom}%`,
+            left: `${w.door.centerX}%`,
+            transform: "translateX(-50%)",
+          }}
         />
       )}
     </div>
