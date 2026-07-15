@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import wallLeft from "../../assets/walls/wall22-left.webp";
 import wallRight from "../../assets/walls/wall22-right.webp";
-import wallCenter from "../../assets/walls/wall22-center.webp";
 import wallFloor from "../../assets/walls/wall22-floor.webp";
 
 interface WallSceneProps {
@@ -32,9 +31,10 @@ const SCENE_W = 1408;
 const SCENE_H = 768;
 const ASPECT = SCENE_W / SCENE_H;
 
-// opening / door geometry (source px → %)
-const DOOR_H_PCT = 59.2; // door display height (fills the opening: y 235→690)
-const DOOR_BOTTOM_PCT = (SCENE_H - 690) / SCENE_H * 100; // threshold → 10.16%
+// opening / door geometry (source px → %). The door fills the WHOLE opening front-face
+// (top y155 → threshold y680) so no recess ceiling/floor peeks above or below it.
+const DOOR_H_PCT = (680 - 155) / SCENE_H * 100; // 68.36%
+const DOOR_BOTTOM_PCT = (SCENE_H - 680) / SCENE_H * 100; // threshold → 11.46%
 const LEFT_W_PCT = 340 / SCENE_W * 100; // 24.15%
 const RIGHT_W_PCT = 333 / SCENE_W * 100; // 23.65%
 const FLOOR_TOP_PCT = 660 / SCENE_H * 100; // real paving strip starts here → 85.94%
@@ -69,17 +69,7 @@ const WallScene: React.FC<WallSceneProps> = ({ doorImage, isUpdating }) => {
           style={{ top: `${FLOOR_TOP_PCT}%` }}
         />
 
-        {/* opening interior (recess + header + threshold), sized to the door, behind the door */}
-        <img
-          src={wallCenter}
-          alt=""
-          aria-hidden
-          draggable={false}
-          className="absolute top-0 h-full"
-          style={{ left: `${doorLeft}%`, width: `${doorWpct}%` }}
-        />
-
-        {/* the configured door */}
+        {/* the configured door — fills the whole opening; its own frame is the opening edge */}
         {doorImage && (
           <img
             src={doorImage}
