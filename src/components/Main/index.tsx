@@ -112,17 +112,14 @@ const Main = ({ isSidebarOpen, hideSidebar }: MainProps) => {
       </div>
     );
   } else {
-    content = (
-      <div className="relative flex justify-center">
-        {isInitialLoad ? (
-          /* wall-shaped skeleton matches the scene's known aspect */
-          <Skeleton className="aspect-[768/1376] h-[92vh] max-h-[1000px] rounded-2xl" />
-        ) : (
-          /* the configured door composited into a fixed house wall (exterior/interior
-             follows the same Inner/Outer view toggle that flips the door's face) */
-          <WallScene doorImage={doorImage} doorType={doorType} interior={!!interiorDoorShown} isUpdating={isUpdating} />
-        )}
+    content = isInitialLoad ? (
+      <div className="flex h-full w-full items-center justify-center">
+        <Skeleton className="aspect-[768/1376] h-[70vh] rounded-2xl" />
       </div>
+    ) : (
+      /* full-bleed house wall; the door tracks the opening (exterior/interior follows the
+         Inner/Outer view toggle that also flips the door's face) */
+      <WallScene doorImage={doorImage} doorType={doorType} interior={!!interiorDoorShown} isUpdating={isUpdating} />
     );
   }
 
@@ -176,10 +173,9 @@ const Main = ({ isSidebarOpen, hideSidebar }: MainProps) => {
       ) : (
         <div
           ref={containerRef}
-          className={`${notInsertTheDoorClasses} transition-[padding] duration-300 ease-in-out ${
-            isSidebarOpen ? "lg:pl-[27rem]" : ""
+          className={`absolute inset-0 transition-[left] duration-300 ease-in-out ${
+            isSidebarOpen ? "lg:left-[27rem]" : ""
           }`}
-          style={contentContainerStyle}
           onClick={hideSidebar}
         >
           {content}
