@@ -56,7 +56,7 @@ const EquipmentGrid: React.FC<EquipmentGridProps> = ({
 
   return (
     <div className="flex flex-col">
-      <div className="h-6">
+      <div className="flex justify-end min-h-[1.5rem] mb-1">
         <RemoveItem
           isShowed={selectedItem !== null && itemCanBeRemoved}
           onClick={() => handleItemSelect(null, null, null)}

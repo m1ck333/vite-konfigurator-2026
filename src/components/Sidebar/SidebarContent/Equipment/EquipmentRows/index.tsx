@@ -49,15 +49,18 @@ const EquipmentRows: React.FC<EquipmentRowsProps> = ({
     );
   };
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <RemoveItem
-        isShowed={selectedItem !== null && itemCanBeRemoved}
-        onClick={() => handleItemSelect(null, null, null)}
-      />
-
-      {items.map((item, index) => (
-        <React.Fragment key={index}>{renderItem(item)}</React.Fragment>
-      ))}
+    <div className="flex flex-col">
+      <div className="flex justify-end min-h-[1.5rem] mb-2">
+        <RemoveItem
+          isShowed={selectedItem !== null && itemCanBeRemoved}
+          onClick={() => handleItemSelect(null, null, null)}
+        />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {items.map((item, index) => (
+          <React.Fragment key={index}>{renderItem(item)}</React.Fragment>
+        ))}
+      </div>
     </div>
   );
 };

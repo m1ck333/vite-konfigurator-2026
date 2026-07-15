@@ -24,7 +24,7 @@ export const usePrintQueryGlass = (translateOnSerbian: boolean) => {
   if (configuration["inner-glass-name"] !== null) {
     const translatedKey = translate("door-glass");
 
-    if (configuration["inner-glass-name"]) {
+    if (configuration["inner-glass-name"] && configuration["inner-glass-name"].toLowerCase() !== "default") {
       if (configuration["inner-glass-id"] === 0) {
         glassSectionData[translatedKey] = configuration["model-name"] || "";
       } else {
@@ -39,7 +39,7 @@ export const usePrintQueryGlass = (translateOnSerbian: boolean) => {
   if (hasSideGlass) {
     const translatedKey = translate("side-glasses");
 
-    if (configuration["side-glass-name"]) {
+    if (configuration["side-glass-name"] && configuration["side-glass-name"].toLowerCase() !== "default") {
       glassSectionData[translatedKey] = configuration["side-glass-name"];
     } else {
       glassSectionData[translatedKey] = translate("default-side-glass");
@@ -50,7 +50,7 @@ export const usePrintQueryGlass = (translateOnSerbian: boolean) => {
   if (hasTransom) {
     const translatedKey = translate("transom-glass");
 
-    if (configuration["transom-glass-name"]) {
+    if (configuration["transom-glass-name"] && configuration["transom-glass-name"].toLowerCase() !== "default") {
       // Special case for decorative glass from the door model
       if (configuration["transom-glass-id"] === 0) {
         glassSectionData[translatedKey] = configuration["model-name"] || "";
