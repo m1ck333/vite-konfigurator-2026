@@ -8,7 +8,6 @@ import Loading from "../ui/Loading";
 import { useTranslation } from "react-i18next";
 import RndDoorImage from "./RndDoorImage";
 import WallScene from "./WallScene";
-import Skeleton from "../ui/Skeleton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useScreenshot } from "../../hooks/useScreenshot";
@@ -112,14 +111,16 @@ const Main = ({ isSidebarOpen, hideSidebar }: MainProps) => {
       </div>
     );
   } else {
-    content = isInitialLoad ? (
-      <div className="flex h-full w-full items-center justify-center">
-        <Skeleton className="aspect-[768/1376] h-[70vh] rounded-2xl" />
-      </div>
-    ) : (
-      /* full-bleed house wall; the door tracks the opening (exterior/interior follows the
-         Inner/Outer view toggle that also flips the door's face) */
-      <WallScene doorImage={doorImage} doorType={doorType} interior={!!interiorDoorShown} isUpdating={isUpdating} />
+    /* the door on a real house facade; the facade shows immediately (spinner over the door area
+       on first load / while a new door is fetched — no skeleton, no blur) */
+    content = (
+      <WallScene
+        doorImage={doorImage}
+        doorType={doorType}
+        interior={!!interiorDoorShown}
+        isUpdating={isUpdating}
+        isInitialLoad={isInitialLoad}
+      />
     );
   }
 

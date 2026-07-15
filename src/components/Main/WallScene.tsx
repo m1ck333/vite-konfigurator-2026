@@ -1,11 +1,13 @@
 import React from "react";
 import wallFacade from "../../assets/walls/wall-facade.webp";
+import Loading from "../ui/Loading";
 
 interface WallSceneProps {
   doorImage: string | null;
   doorType: string | null;
   interior: boolean;
   isUpdating?: boolean;
+  isInitialLoad?: boolean;
 }
 
 /**
@@ -18,12 +20,15 @@ interface WallSceneProps {
  * width (single / side / double) with zero decomposition, zero seams, zero per-family walls.
  *
  * The facade fills a fixed-aspect scene scaled to COVER the preview; the door is placed in scene-%.
+ * While a door is (re)loading we keep the current door sharp and show a small spinner over it — no
+ * blur. On first load the facade shows immediately with just the spinner (no skeleton).
  */
 const SCENE_ASPECT = 1408 / 768;
 const DOOR_H_PCT = 67.7; // door display height (constant)
 const DOOR_BOTTOM_PCT = (768 - 688) / 768 * 100; // stands on the paving line → 10.4%
 
-const WallScene: React.FC<WallSceneProps> = ({ doorImage, isUpdating }) => {
+const WallScene: React.FC<WallSceneProps> = ({ doorImage, isUpdating, isInitialLoad }) => {
+  const loading = !!isUpdating || !!isInitialLoad;
   return (
     <div className="absolute inset-0 overflow-hidden" style={{ backgroundColor: "#ebebeb" }}>
       {/* fixed-aspect facade scaled to cover the whole preview */}
@@ -50,12 +55,23 @@ const WallScene: React.FC<WallSceneProps> = ({ doorImage, isUpdating }) => {
               src={doorImage}
               alt="Configured door"
               draggable={false}
-              className={`door-image absolute left-1/2 -translate-x-1/2 transition-[filter,opacity] duration-200 ${
-                isUpdating ? "blur-[2px] opacity-85" : ""
-              }`}
+              className="door-image absolute left-1/2 -translate-x-1/2"
               style={{ height: `${DOOR_H_PCT}%`, width: "auto", bottom: `${DOOR_BOTTOM_PCT}%` }}
             />
           </>
+        )}
+
+        {/* loading spinner over the door area (first load or while a new door is fetched) */}
+        {loading && (
+          <div className="absolute left-1/2 top-[48%] -translate-x-1/2 -translate-y-1/2">
+            <span
+              role="status"
+              aria-label="Loading"
+              className="inline-flex items-center justify-center rounded-full bg-white/70 p-2 shadow-sm backdrop-blur-sm"
+            >
+              <Loading size="md" />
+            </span>
+          </div>
         )}
       </div>
     </div>
