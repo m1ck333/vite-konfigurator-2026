@@ -172,13 +172,9 @@ const Main = ({ isSidebarOpen, hideSidebar }: MainProps) => {
           {content}
         </div>
       ) : (
-        <div
-          ref={containerRef}
-          className={`absolute inset-0 transition-[left] duration-300 ease-in-out ${
-            isSidebarOpen ? "lg:left-[27rem]" : ""
-          }`}
-          onClick={hideSidebar}
-        >
+        <div ref={containerRef} className="absolute inset-0" onClick={hideSidebar}>
+          {/* facade fills the whole preview and sits BEHIND the sidebar (which just overlays it),
+             so it never gets cut or re-cropped when the sidebar opens/closes */}
           {content}
         </div>
       )}
