@@ -1,5 +1,6 @@
 import React from "react";
 import wallFacade from "../../assets/walls/wall-facade.webp";
+import wallFacadeInt from "../../assets/walls/wall-facade-int.webp";
 import Loading from "../ui/Loading";
 
 interface WallSceneProps {
@@ -11,32 +12,45 @@ interface WallSceneProps {
 }
 
 /**
- * The configured door standing on a real house facade.
+ * The configured door standing on a real house facade — exterior or interior.
  *
- * The source "22" wall was light-normalised (uniform tone, texture kept) and its wide portico
- * recess PAINTED OVER with the same uniform wall tone — which blends invisibly precisely because
- * the wall is uniform. That turns it into a clean flat facade that keeps the real lamps, plants,
- * cornice and paving. The door then simply stands centered on the paving, so it looks right at ANY
- * width (single / side / double) with zero decomposition, zero seams, zero per-family walls.
+ * Each source wall was light-normalised (uniform tone, texture kept) and its opening PAINTED OVER
+ * with the same uniform wall tone — which blends invisibly because the wall is uniform. That yields
+ * a clean flat facade keeping the real lamps / plants / cornice / floor (exterior) or lamps /
+ * console / wood floor (interior). The door then simply stands centered on the floor, so it looks
+ * right at ANY width with zero decomposition, zero seams, zero per-family walls.
  *
- * The facade fills a fixed-aspect scene scaled to COVER the preview; the door is placed in scene-%.
- * While a door is (re)loading we keep the current door sharp and show a small spinner over it — no
- * blur. On first load the facade shows immediately with just the spinner (no skeleton).
+ *  - exterior: landscape facade, scaled to COVER the preview.
+ *  - interior: portrait hallway, fit to HEIGHT and centered; the wall-colour background fills the
+ *    sides (blends into the uniform wall).
+ *
+ * While a door (re)loads we keep the current door sharp and show a small spinner over it — no blur.
  */
-const SCENE_ASPECT = 1408 / 768;
-const DOOR_H_PCT = 67.7; // door display height (constant)
-const DOOR_BOTTOM_PCT = (768 - 688) / 768 * 100; // stands on the paving line → 10.4%
+type Cfg = {
+  src: string;
+  aspect: number;
+  cover: boolean; // true → cover (exterior); false → fit-height + centered (interior)
+  bg: string;
+  door: { bottom: number; height: number }; // % of the scene
+};
+const EXT: Cfg = { src: wallFacade, aspect: 1408 / 768, cover: true, bg: "#ebebeb", door: { bottom: 10.4, height: 67.7 } };
+const INT: Cfg = { src: wallFacadeInt, aspect: 768 / 1376, cover: false, bg: "#e6e6e6", door: { bottom: 15, height: 48 } };
 
-const WallScene: React.FC<WallSceneProps> = ({ doorImage, isUpdating, isInitialLoad }) => {
+const WallScene: React.FC<WallSceneProps> = ({ doorImage, interior, isUpdating, isInitialLoad }) => {
+  const cfg = interior ? INT : EXT;
   const loading = !!isUpdating || !!isInitialLoad;
+  const sceneSize: React.CSSProperties = cfg.cover
+    ? { minWidth: "100%", minHeight: "100%" }
+    : { height: "100%" };
+
   return (
-    <div className="absolute inset-0 overflow-hidden" style={{ backgroundColor: "#ebebeb" }}>
-      {/* fixed-aspect facade scaled to cover the whole preview */}
+    <div className="absolute inset-0 overflow-hidden" style={{ backgroundColor: cfg.bg }}>
+      {/* fixed-aspect facade, centered; cover (exterior) or fit-height (interior) */}
       <div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{ aspectRatio: String(SCENE_ASPECT), minWidth: "100%", minHeight: "100%" }}
+        style={{ aspectRatio: String(cfg.aspect), ...sceneSize }}
       >
-        <img src={wallFacade} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full" />
+        <img src={cfg.src} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full" />
 
         {doorImage && (
           <>
@@ -44,10 +58,10 @@ const WallScene: React.FC<WallSceneProps> = ({ doorImage, isUpdating, isInitialL
             <div
               className="absolute left-1/2 -translate-x-1/2"
               style={{
-                bottom: `${DOOR_BOTTOM_PCT - 1.2}%`,
+                bottom: `${cfg.door.bottom - 1.2}%`,
                 width: "19%",
-                height: "2.4%",
-                background: "radial-gradient(ellipse at center, rgba(0,0,0,0.22), rgba(0,0,0,0) 72%)",
+                height: "2%",
+                background: "radial-gradient(ellipse at center, rgba(0,0,0,0.20), rgba(0,0,0,0) 72%)",
                 filter: "blur(4px)",
               }}
             />
@@ -56,12 +70,11 @@ const WallScene: React.FC<WallSceneProps> = ({ doorImage, isUpdating, isInitialL
               alt="Configured door"
               draggable={false}
               className="door-image absolute left-1/2 -translate-x-1/2"
-              style={{ height: `${DOOR_H_PCT}%`, width: "auto", bottom: `${DOOR_BOTTOM_PCT}%` }}
+              style={{ height: `${cfg.door.height}%`, width: "auto", bottom: `${cfg.door.bottom}%` }}
             />
           </>
         )}
 
-        {/* loading spinner over the door area (first load or while a new door is fetched) */}
         {loading && (
           <div className="absolute left-1/2 top-[48%] -translate-x-1/2 -translate-y-1/2">
             <span
