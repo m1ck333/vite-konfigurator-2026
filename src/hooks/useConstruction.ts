@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import { setConfigurationField } from "../features/configuration/configurationSlice";
 import { RootState } from "../app/store";
@@ -31,6 +32,7 @@ export type DimensionConfig = {
 
 const useConstruction = (doorConfig: DoorConfiguration) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const doorConfiguration = useSelector(
     (state: RootState) => state.configuration
@@ -81,15 +83,15 @@ const useConstruction = (doorConfig: DoorConfiguration) => {
 
   const dimensionConfigs: DimensionConfig[] = useMemo(() => {
     const configs: DimensionConfig[] = [
-      { key: "width", label: "Width of Door", min: 960, max: 1300 },
-      { key: "height", label: "Height of Door", min: 2000, max: 3000 },
+      { key: "width", label: t("width-of-door"), min: 960, max: 1300 },
+      { key: "height", label: t("height-of-door"), min: 2000, max: 3000 },
       // Add other static configs here
     ];
 
     if (dimensions.halfPanelWidth !== 0) {
       configs.push({
         key: "halfPanelWidth",
-        label: "Half Panel Width",
+        label: t("half-panel-width"),
         min: 960,
         max: 1300,
       });
@@ -98,7 +100,7 @@ const useConstruction = (doorConfig: DoorConfiguration) => {
     if (dimensions.leftSideWidth !== 0) {
       configs.push({
         key: "leftSideWidth",
-        label: "Left Side Width",
+        label: t("left-side-width"),
         min: 250,
         max: 1600,
       });
@@ -107,7 +109,7 @@ const useConstruction = (doorConfig: DoorConfiguration) => {
     if (dimensions.rightSideWidth !== 0) {
       configs.push({
         key: "rightSideWidth",
-        label: "Right Side Width",
+        label: t("right-side-width"),
         min: 250,
         max: 1600,
       });
@@ -116,14 +118,14 @@ const useConstruction = (doorConfig: DoorConfiguration) => {
     if (dimensions.upperGlassHeight !== 0) {
       configs.push({
         key: "upperGlassHeight",
-        label: "Upper Glass Height",
+        label: t("upper-glass-height"),
         min: 250,
         max: 1000,
       });
     }
 
     return configs;
-  }, [dimensions]);
+  }, [dimensions, t]);
 
   const calculateSumOfAllWidths = useCallback(() => {
     return (
