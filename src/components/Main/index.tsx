@@ -23,6 +23,7 @@ const Main = ({ isSidebarOpen, hideSidebar }: MainProps) => {
   const { t } = useTranslation();
   const activeItem = useSelector(selectActiveItem);
   const interiorDoorShown = useSelector((s: RootState) => s.configuration.interiorDoorShown);
+  const doorType = useSelector((s: RootState) => s.configuration.type);
   const { doorImage, isInitialLoad, isUpdating, isError } = useDoorImage();
   const containerRef = useRef<HTMLDivElement>(null);
   const [imageSize, setImageSize] = useState({ width: "auto", height: "auto" });
@@ -119,7 +120,7 @@ const Main = ({ isSidebarOpen, hideSidebar }: MainProps) => {
         ) : (
           /* the configured door composited into a fixed house wall (exterior/interior
              follows the same Inner/Outer view toggle that flips the door's face) */
-          <WallScene doorImage={doorImage} interior={!!interiorDoorShown} isUpdating={isUpdating} />
+          <WallScene doorImage={doorImage} doorType={doorType} interior={!!interiorDoorShown} isUpdating={isUpdating} />
         )}
       </div>
     );

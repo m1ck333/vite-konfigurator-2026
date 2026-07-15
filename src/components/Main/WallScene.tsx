@@ -1,25 +1,42 @@
 import React from "react";
-import exteriorWall from "../../assets/walls/exterior.webp";
-import interiorWall from "../../assets/walls/interior.webp";
+import singleExt from "../../assets/walls/single-ext.webp";
+import singleInt from "../../assets/walls/single-int.webp";
+import doubleExt from "../../assets/walls/double-ext.webp";
+import doubleInt from "../../assets/walls/double-int.webp";
 
 interface WallSceneProps {
   doorImage: string | null;
+  doorType: string | null;
   interior: boolean;
   isUpdating?: boolean;
 }
 
-// Per-wall config. The door is sized by HEIGHT (fills the opening's height) with its NATURAL
-// width, centered on centerX and resting on the threshold (bottom). So a thin door is tall+narrow,
-// a double is tall+wide — the dark opening behind absorbs the rest. All values are % of the wall.
-const WALLS = {
-  // wide landscape entrance with a big dark opening (fits double + side panels + transom)
-  exterior: { src: exteriorWall, aspect: 1408 / 768, door: { bottom: 10.2, height: 59.2, centerX: 50 } },
-  // portrait interior placeholder (pending a matching wide landscape interior)
-  interior: { src: interiorWall, aspect: 768 / 1376, door: { bottom: 14.2, height: 61.0, centerX: 49.5 } },
+// Option (c): a wall per door FAMILY whose opening matches that family's shape, selected by the
+// door type. `door` = where the door sits in the opening (% of wall): it's sized by HEIGHT with
+// its natural width, centered on centerX, resting on the threshold (bottom).
+type WallCfg = { src: string; aspect: number; door: { bottom: number; height: number; centerX: number } };
+const WALLS: Record<"single" | "side" | "double", { ext: WallCfg; int: WallCfg }> = {
+  single: {
+    ext: { src: singleExt, aspect: 768 / 1376, door: { bottom: 23.0, height: 42.0, centerX: 49.7 } },
+    int: { src: singleInt, aspect: 768 / 1376, door: { bottom: 14.2, height: 61.0, centerX: 49.5 } },
+  },
+  // side-panel + double share the wide-opening wall until dedicated walls are added
+  side: {
+    ext: { src: doubleExt, aspect: 1408 / 768, door: { bottom: 10.2, height: 59.2, centerX: 50.0 } },
+    int: { src: doubleInt, aspect: 768 / 1376, door: { bottom: 14.2, height: 61.0, centerX: 49.5 } },
+  },
+  double: {
+    ext: { src: doubleExt, aspect: 1408 / 768, door: { bottom: 10.2, height: 59.2, centerX: 50.0 } },
+    int: { src: doubleInt, aspect: 768 / 1376, door: { bottom: 14.2, height: 61.0, centerX: 49.5 } },
+  },
 };
 
-const WallScene: React.FC<WallSceneProps> = ({ doorImage, interior, isUpdating }) => {
-  const w = interior ? WALLS.interior : WALLS.exterior;
+const familyOf = (type: string): "single" | "side" | "double" =>
+  type.includes("double") ? "double" : type.includes("side-panel") ? "side" : "single";
+
+const WallScene: React.FC<WallSceneProps> = ({ doorImage, doorType, interior, isUpdating }) => {
+  const fam = WALLS[familyOf(doorType || "")];
+  const w = interior ? fam.int : fam.ext;
   return (
     <div
       className="relative rounded-2xl overflow-hidden shadow-2xl bg-black/5"
