@@ -38,7 +38,7 @@ const DOOR_BOTTOM_PCT = (SCENE_H - 680) / SCENE_H * 100; // threshold → 11.46%
 const LEFT_W_PCT = 340 / SCENE_W * 100; // 24.15%
 const RIGHT_W_PCT = 333 / SCENE_W * 100; // 23.65%
 const FLOOR_TOP_PCT = 660 / SCENE_H * 100; // real paving strip starts here → 85.94%
-const WALL_WHITE = "#E1E2E3";
+const WALL_WHITE = "#E7E7E5"; // matches the lit plaster near the opening (stopgap for the 22 wall)
 
 // NOTE: `interior`/`doorType` are accepted (door face flips via the render) but the slide engine
 // currently uses one decomposed wall for every family; dedicated interior pieces slot in later.
