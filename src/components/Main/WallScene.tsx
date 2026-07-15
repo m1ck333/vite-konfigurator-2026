@@ -1,6 +1,6 @@
 import React from "react";
-import exteriorWall from "../../assets/walls/exterior.png";
-import interiorWall from "../../assets/walls/interior.png";
+import exteriorWall from "../../assets/walls/exterior.webp";
+import interiorWall from "../../assets/walls/interior.webp";
 
 interface WallSceneProps {
   doorImage: string | null;
