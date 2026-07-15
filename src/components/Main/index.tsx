@@ -186,7 +186,9 @@ const Main = ({ isSidebarOpen, hideSidebar }: MainProps) => {
       ) : (
         <div
           ref={containerRef}
-          className={`${notInsertTheDoorClasses}`}
+          className={`${notInsertTheDoorClasses} transition-[padding] duration-300 ease-in-out ${
+            isSidebarOpen ? "lg:pl-[27rem]" : ""
+          }`}
           style={contentContainerStyle}
           onClick={hideSidebar}
         >
