@@ -126,7 +126,7 @@
 }
 
 body {
-  background-color: #ebebeb; /* matches the facade wall so uncovered areas (behind sidebar, edges) blend */
+  background-color: #cdc8c1; /* matches the exterior facade wall so any uncovered area blends */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;

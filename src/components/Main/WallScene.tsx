@@ -33,7 +33,7 @@ type Cfg = {
   bg: string;
   door: { bottom: number; height: number }; // % of the scene
 };
-const EXT: Cfg = { src: wallFacade, aspect: 1408 / 768, cover: true, bg: "#ebebeb", door: { bottom: 10.4, height: 67.7 } };
+const EXT: Cfg = { src: wallFacade, aspect: 1376 / 768, cover: true, bg: "#cdc8c1", door: { bottom: 10, height: 68 } };
 const INT: Cfg = { src: wallFacadeInt, aspect: 1376 / 768, cover: true, bg: "#d8d4ce", door: { bottom: 9, height: 68 } };
 
 const WallScene: React.FC<WallSceneProps> = ({ doorImage, interior, isUpdating, isInitialLoad }) => {
