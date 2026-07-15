@@ -56,9 +56,11 @@ const useDoorImage = (): UseDoorImageReturn => {
   const debouncedFetch = useMemo(() => debounce(fetchImage, 500), []);
 
   // Blur immediately when the config changes (before the debounce fires), and
-  // trigger the (debounced) fetch.
+  // trigger the (debounced) fetch. Wait for the config to be SEEDED (model-id set by
+  // fetchDefaultItems) — otherwise the initial empty config renders a bare door that then
+  // gets replaced once defaults arrive (the "base first, then glass/equipment" flash).
   useEffect(() => {
-    if (selectedConfiguration) {
+    if (selectedConfiguration && selectedConfiguration["model-id"]) {
       setPending(true);
       debouncedFetch(selectedConfiguration);
     }
