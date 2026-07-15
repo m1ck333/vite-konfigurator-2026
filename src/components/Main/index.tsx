@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectActiveItem } from "../../features/sidebar/sidebarSlice";
+import { RootState } from "../../app/store";
 import useDoorImage from "../../hooks/useDoorImage";
 import Error from "../ui/Error";
 import Loading from "../ui/Loading";
 import { useTranslation } from "react-i18next";
 import RndDoorImage from "./RndDoorImage";
+import WallScene from "./WallScene";
 import Skeleton from "../ui/Skeleton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -20,6 +22,7 @@ interface MainProps {
 const Main = ({ isSidebarOpen, hideSidebar }: MainProps) => {
   const { t } = useTranslation();
   const activeItem = useSelector(selectActiveItem);
+  const interiorDoorShown = useSelector((s: RootState) => s.configuration.interiorDoorShown);
   const { doorImage, isInitialLoad, isUpdating, isError } = useDoorImage();
   const containerRef = useRef<HTMLDivElement>(null);
   const [imageSize, setImageSize] = useState({ width: "auto", height: "auto" });
@@ -111,26 +114,12 @@ const Main = ({ isSidebarOpen, hideSidebar }: MainProps) => {
     content = (
       <div className="relative flex justify-center">
         {isInitialLoad ? (
-          /* first load is always the default single-leaf door, so a
-             door-shaped skeleton matches its known shape/size */
-          <Skeleton className="aspect-[13/25] h-[76vh] rounded-2xl" />
+          /* wall-shaped skeleton matches the scene's known aspect */
+          <Skeleton className="aspect-[768/1376] h-[92vh] max-h-[1000px] rounded-2xl" />
         ) : (
-          <>
-            {/* soft ground shadow once the door is visible */}
-            <div className="pointer-events-none absolute bottom-1 left-1/2 -translate-x-1/2 w-[62%] h-6 bg-black/25 blur-2xl rounded-[50%]" />
-            <img
-              key={doorImage}
-              className={`object-contain drop-shadow-2xl transition-[filter,opacity] duration-200 ${
-                isUpdating ? "blur-md opacity-75 animate-pulse" : ""
-              }`}
-              style={{
-                maxWidth: imageSize.width,
-                maxHeight: imageSize.height,
-              }}
-              src={doorImage ?? undefined}
-              alt="Displayed Door"
-            />
-          </>
+          /* the configured door composited into a fixed house wall (exterior/interior
+             follows the same Inner/Outer view toggle that flips the door's face) */
+          <WallScene doorImage={doorImage} interior={!!interiorDoorShown} isUpdating={isUpdating} />
         )}
       </div>
     );
