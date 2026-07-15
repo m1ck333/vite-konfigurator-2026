@@ -1,6 +1,8 @@
-import React from "react";
-import doubleExt from "../../assets/walls/double-ext.webp";
-import doubleInt from "../../assets/walls/double-int.webp";
+import React, { useState } from "react";
+import wallLeft from "../../assets/walls/wall22-left.webp";
+import wallRight from "../../assets/walls/wall22-right.webp";
+import wallCenter from "../../assets/walls/wall22-center.webp";
+import wallFloor from "../../assets/walls/wall22-floor.webp";
 
 interface WallSceneProps {
   doorImage: string | null;
@@ -9,59 +11,115 @@ interface WallSceneProps {
   isUpdating?: boolean;
 }
 
-// A wall per door FAMILY. The wall image fills a fixed-aspect "scene" box; that box is scaled to
-// COVER the whole preview (overflow cropped at the edges), so the wall is full-bleed AND the door,
-// positioned in scene-% coordinates, stays locked to the opening at any viewport size.
-// door = where the door sits in the opening (% of the scene): height + centerX + threshold(bottom).
-type WallCfg = { src: string; aspect: number; door: { bottom: number; height: number; centerX: number } };
-const WALLS: Record<"single" | "side" | "double", { ext: WallCfg; int: WallCfg }> = {
-  // TODO: dedicated LANDSCAPE single-door walls (narrow opening). Until then the single family
-  // uses the wide landscape wall so it stays full-bleed (single doors show a wider reveal).
-  single: {
-    ext: { src: doubleExt, aspect: 1408 / 768, door: { bottom: 10.2, height: 59.2, centerX: 50.0 } },
-    int: { src: doubleInt, aspect: 768 / 1376, door: { bottom: 14.2, height: 61.0, centerX: 49.5 } },
-  },
-  side: {
-    ext: { src: doubleExt, aspect: 1408 / 768, door: { bottom: 10.2, height: 59.2, centerX: 50.0 } },
-    int: { src: doubleInt, aspect: 768 / 1376, door: { bottom: 14.2, height: 61.0, centerX: 49.5 } },
-  },
-  double: {
-    ext: { src: doubleExt, aspect: 1408 / 768, door: { bottom: 10.2, height: 59.2, centerX: 50.0 } },
-    int: { src: doubleInt, aspect: 768 / 1376, door: { bottom: 14.2, height: 61.0, centerX: 49.5 } },
-  },
-};
+/**
+ * ONE wall fits ANY door width — the "slide engine".
+ *
+ * The wall photo is decomposed into three pieces (cut from the source at the opening jambs):
+ *   center  = the opening interior (recess + header + threshold)  → sits BEHIND the door
+ *   left    = left wall + lamp + plant + left jamb/reveal
+ *   right   = right wall + lamp + plant + right jamb/reveal
+ *
+ * The door is rendered by the backend at a CONSTANT display height; its width comes from the
+ * image's own aspect ratio (onLoad). The two side panels then SLIDE so their inner edge (the
+ * reveal) is pinned to the door's edges — widen the door and the panels (lamps/plants) move
+ * apart, narrow it and they close in. The reveal therefore hugs every door: single, side-panel
+ * or double, from a single wall. The scene fills the preview (wall colour behind blends the
+ * seams) and the floor is a full-width strip so the bottom never mismatches.
+ *
+ * Coordinates below are in the source wall's pixel space (1408×768) expressed as % of the scene.
+ */
+const SCENE_W = 1408;
+const SCENE_H = 768;
+const ASPECT = SCENE_W / SCENE_H;
 
-const familyOf = (type: string): "single" | "side" | "double" =>
-  type.includes("double") ? "double" : type.includes("side-panel") ? "side" : "single";
+// opening / door geometry (source px → %)
+const DOOR_H_PCT = 59.2; // door display height (fills the opening: y 235→690)
+const DOOR_BOTTOM_PCT = (SCENE_H - 690) / SCENE_H * 100; // threshold → 10.16%
+const LEFT_W_PCT = 340 / SCENE_W * 100; // 24.15%
+const RIGHT_W_PCT = 333 / SCENE_W * 100; // 23.65%
+const FLOOR_TOP_PCT = 660 / SCENE_H * 100; // real paving strip starts here → 85.94%
+const WALL_WHITE = "#E1E2E3";
 
-const WallScene: React.FC<WallSceneProps> = ({ doorImage, doorType, interior, isUpdating }) => {
-  const fam = WALLS[familyOf(doorType || "")];
-  const w = interior ? fam.int : fam.ext;
+// NOTE: `interior`/`doorType` are accepted (door face flips via the render) but the slide engine
+// currently uses one decomposed wall for every family; dedicated interior pieces slot in later.
+const WallScene: React.FC<WallSceneProps> = ({ doorImage, isUpdating }) => {
+  // door aspect (width / height) from the rendered image; drives the slide.
+  const [aspect, setAspect] = useState(227 / 455); // sensible default (single door)
+
+  // door width as % of scene width = aspect × (door height in scene px) / scene width.
+  // DOOR_H_PCT is already a %, and SCENE_H/SCENE_W converts the height-% into a width-%.
+  const doorWpct = aspect * DOOR_H_PCT * SCENE_H / SCENE_W;
+  const doorLeft = 50 - doorWpct / 2;
+  const doorRight = 50 + doorWpct / 2;
+
   return (
-    <div className="absolute inset-0 overflow-hidden">
-      {/* fixed-aspect scene box scaled to cover the whole area */}
+    <div className="absolute inset-0 overflow-hidden" style={{ backgroundColor: WALL_WHITE }}>
+      {/* fixed-aspect scene, scaled to COVER the whole preview */}
       <div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{ aspectRatio: String(w.aspect), minWidth: "100%", minHeight: "100%" }}
+        style={{ aspectRatio: String(ASPECT), minWidth: "100%", minHeight: "100%", backgroundColor: WALL_WHITE }}
       >
-        <img src={w.src} alt="" aria-hidden className="absolute inset-0 h-full w-full" draggable={false} />
+        {/* full-width real paving (the ground plane) so the bottom edges never mismatch */}
+        <img
+          src={wallFloor}
+          alt=""
+          aria-hidden
+          draggable={false}
+          className="absolute inset-x-0 bottom-0 w-full"
+          style={{ top: `${FLOOR_TOP_PCT}%` }}
+        />
+
+        {/* opening interior (recess + header + threshold), sized to the door, behind the door */}
+        <img
+          src={wallCenter}
+          alt=""
+          aria-hidden
+          draggable={false}
+          className="absolute top-0 h-full"
+          style={{ left: `${doorLeft}%`, width: `${doorWpct}%` }}
+        />
+
+        {/* the configured door */}
         {doorImage && (
           <img
             src={doorImage}
             alt="Configured door"
             draggable={false}
+            onLoad={(e) => {
+              const el = e.currentTarget;
+              if (el.naturalWidth && el.naturalHeight) setAspect(el.naturalWidth / el.naturalHeight);
+            }}
             className={`door-image absolute transition-[filter,opacity] duration-200 ${
               isUpdating ? "blur-[2px] opacity-85" : ""
             }`}
             style={{
-              height: `${w.door.height}%`,
+              height: `${DOOR_H_PCT}%`,
               width: "auto",
-              bottom: `${w.door.bottom}%`,
-              left: `${w.door.centerX}%`,
+              bottom: `${DOOR_BOTTOM_PCT}%`,
+              left: "50%",
               transform: "translateX(-50%)",
             }}
           />
         )}
+
+        {/* left panel: slides so its reveal (right edge) hugs the door's left edge */}
+        <img
+          src={wallLeft}
+          alt=""
+          aria-hidden
+          draggable={false}
+          className="absolute top-0 h-full"
+          style={{ left: `${doorLeft - LEFT_W_PCT}%`, width: `${LEFT_W_PCT}%` }}
+        />
+        {/* right panel: reveal (left edge) hugs the door's right edge */}
+        <img
+          src={wallRight}
+          alt=""
+          aria-hidden
+          draggable={false}
+          className="absolute top-0 h-full"
+          style={{ left: `${doorRight}%`, width: `${RIGHT_W_PCT}%` }}
+        />
       </div>
     </div>
   );
