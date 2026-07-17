@@ -1,4 +1,4 @@
-# Vite Konfigurator 2024 (Frontend)
+# Vite Konfigurator 2026 (Frontend)
 
 Vite + React + TypeScript rebuild of the Algreen door configurator frontend, migrated off
 Create React App (`react-scripts`, unmaintained). Backend is the Hono/Cloudflare Worker in
