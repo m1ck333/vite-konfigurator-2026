@@ -1,10 +1,11 @@
 # Vite Konfigurator 2024 (Frontend)
 
 Vite + React + TypeScript rebuild of the Algreen door configurator frontend, migrated off
-Create React App (`react-scripts`, unmaintained). Same backend (`../laravel-konfigurator-2024`).
+Create React App (`react-scripts`, unmaintained). Backend is the Hono/Cloudflare Worker in
+`../hono-konfigurator-be` (the old React CRA app and Laravel BE have been removed).
 
-This app **reuses the logic** from the original `../react-konfigurator-2024` (Redux slices, hooks,
-API layer, types, utils, i18n) on a modern Vite toolchain. UI is being improved incrementally.
+The logic (Redux slices, hooks, API layer, types, utils, i18n) was carried over from the original
+CRA app onto a modern Vite toolchain. UI is being improved incrementally.
 
 ## Commands
 
