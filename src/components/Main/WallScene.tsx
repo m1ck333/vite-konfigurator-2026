@@ -1,5 +1,6 @@
 import React from "react";
-import wallFacade from "../../assets/walls/wall-facade.webp";
+import wallRecess from "../../assets/walls/wall-facade-2026.webp"; // door-shaped recess (narrow configs)
+import wallWide from "../../assets/walls/wall-facade-wide.webp"; // wide entrance (wide configs)
 import wallFacadeInt from "../../assets/walls/wall-facade-int.webp";
 import Loading from "../ui/Loading";
 
@@ -12,76 +13,84 @@ interface WallSceneProps {
 }
 
 /**
- * The configured door standing on a real house facade — exterior or interior.
+ * The configured door in a real house facade (exterior) or on the interior wall.
  *
- * Each source wall was light-normalised (uniform tone, texture kept) and its opening PAINTED OVER
- * with the same uniform wall tone — which blends invisibly because the wall is uniform. That yields
- * a clean flat facade keeping the real lamps / plants / cornice / floor (exterior) or lamps /
- * console / wood floor (interior). The door then simply stands centered on the floor, so it looks
- * right at ANY width with zero decomposition, zero seams, zero per-family walls.
- *
- *  - exterior: landscape facade, scaled to COVER the preview.
- *  - interior: portrait hallway, fit to HEIGHT and centered; the wall-colour background fills the
- *    sides (blends into the uniform wall).
- *
- * While a door (re)loads we keep the current door sharp and show a small spinner over it — no blur.
+ * Exterior uses TWO scenes so every config looks right (a wide double-door can't fit a single-door
+ * recess): narrow configs (single leaf ± transom) drop into a door-shaped RECESS and fill it; wide
+ * configs (side panels / double leaf) use a WIDE entrance and are fitted (contain) into it. All the
+ * placement numbers below are single-value tunes.
  */
-type Cfg = {
-  src: string;
-  aspect: number;
-  cover: boolean; // true → cover (exterior); false → fit-height + centered (interior)
-  bg: string;
-  door: { bottom: number; height: number }; // % of the scene
-};
-const EXT: Cfg = { src: wallFacade, aspect: 1376 / 768, cover: true, bg: "#cdc8c1", door: { bottom: 12, height: 68 } };
-const INT: Cfg = { src: wallFacadeInt, aspect: 1376 / 768, cover: true, bg: "#d8d4ce", door: { bottom: 8.4, height: 68 } };
+const isWideType = (t: string | null) => !!t && (t.includes("side-panel") || t.includes("double-leaf"));
 
-const WallScene: React.FC<WallSceneProps> = ({ doorImage, interior, isUpdating, isInitialLoad }) => {
-  const cfg = interior ? INT : EXT;
+// door-shaped recess: door sized by height to fill it, stands on the step, centred on the opening
+const RECESS = { cx: 49.8, bottom: 21.5, height: 60 };
+// wide entrance: door fitted (contain, bottom) into this box
+const WIDE = { cx: 48, bottom: 16, width: 34, height: 54 };
+// interior wall
+const INTR = { cx: 50, bottom: 8.4, height: 68 };
+
+const ASPECT = 1376 / 768;
+
+const WallScene: React.FC<WallSceneProps> = ({ doorImage, doorType, interior, isUpdating, isInitialLoad }) => {
+  const wide = !interior && isWideType(doorType);
+  const src = interior ? wallFacadeInt : wide ? wallWide : wallRecess;
+  const bg = interior ? "#d8d4ce" : "#ded7c9";
   const loading = !!isUpdating || !!isInitialLoad;
-  const sceneSize: React.CSSProperties = cfg.cover
-    ? { minWidth: "100%", minHeight: "100%" }
-    : { height: "100%" };
 
   return (
-    <div className="absolute inset-0 overflow-hidden" style={{ backgroundColor: cfg.bg }}>
-      {/* fixed-aspect facade, centered; cover (exterior) or fit-height (interior) */}
+    <div className="absolute inset-0 overflow-hidden" style={{ backgroundColor: bg }}>
       <div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{ aspectRatio: String(cfg.aspect), ...sceneSize }}
+        style={{ aspectRatio: String(ASPECT), minWidth: "100%", minHeight: "100%" }}
       >
-        <img src={cfg.src} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full" />
+        <img src={src} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full" />
 
-        {doorImage && (
-          <>
-            {/* soft ground contact shadow */}
-            <div
-              className="absolute left-1/2 -translate-x-1/2"
-              style={{
-                bottom: `${cfg.door.bottom - 1.2}%`,
-                width: "19%",
-                height: "2%",
-                background: "radial-gradient(ellipse at center, rgba(0,0,0,0.20), rgba(0,0,0,0) 72%)",
-                filter: "blur(4px)",
-              }}
-            />
+        {doorImage && wide && (
+          // wide configs: fit (contain, bottom) into the wide entrance box
+          <div
+            className="absolute -translate-x-1/2"
+            style={{ left: `${WIDE.cx}%`, bottom: `${WIDE.bottom}%`, width: `${WIDE.width}%`, height: `${WIDE.height}%` }}
+          >
             <img
               src={doorImage}
               alt="Configured door"
               draggable={false}
-              className="door-image absolute left-1/2 -translate-x-1/2"
-              style={{ height: `${cfg.door.height}%`, width: "auto", bottom: `${cfg.door.bottom}%` }}
+              className="door-image h-full w-full"
+              style={{ objectFit: "contain", objectPosition: "center bottom", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.28))" }}
             />
-          </>
+          </div>
+        )}
+
+        {doorImage && !wide && (
+          // narrow configs (or interior): sized by height, centred, standing on the step
+          <div
+            className="absolute -translate-x-1/2"
+            style={{
+              left: `${(interior ? INTR : RECESS).cx}%`,
+              bottom: `${(interior ? INTR : RECESS).bottom}%`,
+              height: `${(interior ? INTR : RECESS).height}%`,
+            }}
+          >
+            <img
+              src={doorImage}
+              alt="Configured door"
+              draggable={false}
+              className="door-image block h-full w-auto"
+              style={{ filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.28))" }}
+            />
+            {!interior && (
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0"
+                style={{ height: "6%", background: "linear-gradient(to bottom, rgba(0,0,0,0.26), rgba(0,0,0,0))" }}
+              />
+            )}
+          </div>
         )}
 
         {loading && (
           <div className="absolute left-1/2 top-[48%] -translate-x-1/2 -translate-y-1/2">
-            <span
-              role="status"
-              aria-label="Loading"
-              className="inline-flex items-center justify-center rounded-full bg-white/70 p-2 shadow-sm backdrop-blur-sm"
-            >
+            <span role="status" aria-label="Loading" className="inline-flex items-center justify-center rounded-full bg-white/70 p-2 shadow-sm backdrop-blur-sm">
               <Loading size="md" />
             </span>
           </div>
