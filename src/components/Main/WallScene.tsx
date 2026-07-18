@@ -1,7 +1,7 @@
 import React from "react";
-import wallRecess from "../../assets/walls/wall-facade-2026.webp"; // door-shaped recess (narrow configs)
-import wallWide from "../../assets/walls/wall-facade-wide.webp"; // wide entrance (wide configs)
+import wallFacade from "../../assets/walls/wall-facade-2026.webp";
 import wallFacadeInt from "../../assets/walls/wall-facade-int.webp";
+import revealFrame from "../../assets/walls/reveal-frame.webp";
 import Loading from "../ui/Loading";
 
 interface WallSceneProps {
@@ -13,28 +13,22 @@ interface WallSceneProps {
 }
 
 /**
- * The configured door in a real house facade (exterior) or on the interior wall.
+ * The configured door recessed into a solid travertine facade (exterior) or on the interior wall.
  *
- * Exterior uses TWO scenes so every config looks right (a wide double-door can't fit a single-door
- * recess): narrow configs (single leaf ± transom) drop into a door-shaped RECESS and fill it; wide
- * configs (side panels / double leaf) use a WIDE entrance and are fitted (contain) into it. All the
- * placement numbers below are single-value tunes.
+ * The recess "dent" is a real travertine reveal frame applied as a CSS border-image (nine-slice) on
+ * the door: the mitered corners stay fixed and only the edges stretch, so the recess hugs the door
+ * cleanly at ANY width (single leaf → double + side panels + transom) with no broken corners. Reveal
+ * on top + sides only; the door stands on the step. Tune with DOOR (single numbers).
  */
-const isWideType = (t: string | null) => !!t && (t.includes("side-panel") || t.includes("double-leaf"));
-
-// door-shaped recess: door sized by height to fill it, stands on the step, centred on the opening
-const RECESS = { cx: 49.8, bottom: 21.5, height: 60 };
-// wide entrance: door fitted (contain, bottom) into this box
-const WIDE = { cx: 48, bottom: 16, width: 34, height: 54 };
-// interior wall
-const INTR = { cx: 50, bottom: 8.4, height: 68 };
-
 const ASPECT = 1376 / 768;
+const DOOR = { cx: 50, bottom: 13, height: 62 };
+const INT_DOOR = { cx: 50, bottom: 8.4, height: 68 };
+const DEP = 20; // reveal depth (px)
 
-const WallScene: React.FC<WallSceneProps> = ({ doorImage, doorType, interior, isUpdating, isInitialLoad }) => {
-  const wide = !interior && isWideType(doorType);
-  const src = interior ? wallFacadeInt : wide ? wallWide : wallRecess;
+const WallScene: React.FC<WallSceneProps> = ({ doorImage, interior, isUpdating, isInitialLoad }) => {
+  const src = interior ? wallFacadeInt : wallFacade;
   const bg = interior ? "#d8d4ce" : "#ded7c9";
+  const d = interior ? INT_DOOR : DOOR;
   const loading = !!isUpdating || !!isInitialLoad;
 
   return (
@@ -45,30 +39,22 @@ const WallScene: React.FC<WallSceneProps> = ({ doorImage, doorType, interior, is
       >
         <img src={src} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full" />
 
-        {doorImage && wide && (
-          // wide configs: fit (contain, bottom) into the wide entrance box
-          <div
-            className="absolute -translate-x-1/2"
-            style={{ left: `${WIDE.cx}%`, bottom: `${WIDE.bottom}%`, width: `${WIDE.width}%`, height: `${WIDE.height}%` }}
-          >
-            <img
-              src={doorImage}
-              alt="Configured door"
-              draggable={false}
-              className="door-image h-full w-full"
-              style={{ objectFit: "contain", objectPosition: "center bottom", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.28))" }}
-            />
-          </div>
-        )}
-
-        {doorImage && !wide && (
-          // narrow configs (or interior): sized by height, centred, standing on the step
+        {doorImage && (
           <div
             className="absolute -translate-x-1/2"
             style={{
-              left: `${(interior ? INTR : RECESS).cx}%`,
-              bottom: `${(interior ? INTR : RECESS).bottom}%`,
-              height: `${(interior ? INTR : RECESS).height}%`,
+              left: `${d.cx}%`,
+              bottom: `${d.bottom}%`,
+              height: `${d.height}%`,
+              boxSizing: "content-box",
+              borderStyle: "solid",
+              borderColor: "transparent",
+              borderWidth: interior ? "0" : `${DEP}px ${DEP}px 0 ${DEP}px`,
+              borderImageSource: interior ? "none" : `url(${revealFrame})`,
+              borderImageSlice: "44 64",
+              borderImageWidth: `${DEP}px ${DEP}px 0 ${DEP}px`,
+              borderImageRepeat: "stretch",
+              filter: "drop-shadow(0 5px 10px rgba(0,0,0,0.30))",
             }}
           >
             <img
@@ -76,15 +62,7 @@ const WallScene: React.FC<WallSceneProps> = ({ doorImage, doorType, interior, is
               alt="Configured door"
               draggable={false}
               className="door-image block h-full w-auto"
-              style={{ filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.28))" }}
             />
-            {!interior && (
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 top-0"
-                style={{ height: "6%", background: "linear-gradient(to bottom, rgba(0,0,0,0.26), rgba(0,0,0,0))" }}
-              />
-            )}
           </div>
         )}
 
