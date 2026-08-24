@@ -13,7 +13,7 @@ import { RootState } from "../../../../app/store";
 import Selectable from "../../../ui/Selectable";
 import SectionHeading from "../../../ui/SectionHeading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCamera } from "@fortawesome/free-solid-svg-icons";
+import { faCamera, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const Houses: React.FC = () => {
   const { t } = useTranslation();
@@ -95,6 +95,15 @@ const Houses: React.FC = () => {
     }
   };
 
+  const handleRemoveCustomImage = () => {
+    setCustomImage(null);
+    localStorage.removeItem("backgroundImage");
+    // if the custom image was the active background, clear it (nothing selected)
+    if (selectedHouseId === null) {
+      dispatch(setHouseImageUrl(""));
+    }
+  };
+
   if (isLoading)
     return (
       <>
@@ -133,17 +142,31 @@ const Houses: React.FC = () => {
 
       <div className="grid grid-cols-1 gap-4">
         {customImage && (
-          <Selectable
-            isSelected={selectedHouseId === null && customImage !== null}
-            onClick={handleSelectCustomImage}
-            classNames="p-4"
-          >
-            <img
-              src={customImage}
-              alt="Custom house"
-              className="object-cover w-full h-full rounded-lg"
-            />
-          </Selectable>
+          <div className="relative">
+            <Selectable
+              isSelected={selectedHouseId === null && customImage !== null}
+              onClick={handleSelectCustomImage}
+              classNames="p-4"
+            >
+              <img
+                src={customImage}
+                alt="Custom house"
+                className="object-cover w-full h-full rounded-lg"
+              />
+            </Selectable>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRemoveCustomImage();
+              }}
+              aria-label={t("remove") || "Remove"}
+              title={t("remove") || "Remove"}
+              className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white shadow-md backdrop-blur-sm transition-colors hover:bg-black"
+            >
+              <FontAwesomeIcon icon={faXmark} />
+            </button>
+          </div>
         )}
 
         {houses.map((house) => (
