@@ -1,7 +1,22 @@
 import { useSelector } from "react-redux";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { RootState } from "../app/store";
 import { debounce } from "../utils";
+
+// The default configuration always renders the SAME door, so we cache the first door of each session as
+// a data URL and show it INSTANTLY on the next page load (no spinner), then swap in the freshly-fetched
+// one. `localStorage` persists across refreshes; a data URL survives (a blob: URL would not).
+const DEFAULT_DOOR_KEY = "defaultDoorImg";
+
+const blobUrlToDataUrl = async (blobUrl: string): Promise<string> => {
+  const blob = await (await fetch(blobUrl)).blob();
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
 
 interface UseDoorImageReturn {
   /** The door image that is fully loaded and safe to display. */
@@ -35,8 +50,20 @@ const useDoorImage = (): UseDoorImageReturn => {
 
   // last URL returned by the API (may not be decoded/preloaded yet)
   const [fetchedUrl, setFetchedUrl] = useState<string | null>(null);
-  // the URL that has finished preloading and is safe to render
-  const [readySrc, setReadySrc] = useState<string | null>(null);
+  // the URL that has finished preloading and is safe to render — seeded from the cached default door so
+  // something shows on the very first paint instead of a blank spinner.
+  const [readySrc, setReadySrc] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(DEFAULT_DOOR_KEY);
+    } catch {
+      return null;
+    }
+  });
+  // cache only the FIRST door of the session (= the default) as the next-load placeholder.
+  const cachedDefault = useRef(false);
+  // false until the first FRESH (API) door has loaded — used to suppress the "updating" spinner on the
+  // initial re-fetch when a cached default is already on screen (only real user changes should spin).
+  const [freshLoaded, setFreshLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   // true from the moment the config changes until the new door is ready
   const [pending, setPending] = useState(false);
@@ -79,7 +106,22 @@ const useDoorImage = (): UseDoorImageReturn => {
     let cancelled = false;
     const img = new Image();
     img.onload = () => {
-      if (!cancelled) setReadySrc(fetchedUrl);
+      if (cancelled) return;
+      setReadySrc(fetchedUrl);
+      setFreshLoaded(true);
+      // persist the first door of the session (the default) for an instant next load
+      if (!cachedDefault.current) {
+        cachedDefault.current = true;
+        blobUrlToDataUrl(fetchedUrl)
+          .then((dataUrl) => {
+            try {
+              localStorage.setItem(DEFAULT_DOOR_KEY, dataUrl);
+            } catch {
+              /* quota / disabled storage — ignore */
+            }
+          })
+          .catch(() => {});
+      }
     };
     img.src = fetchedUrl;
     return () => {
@@ -88,7 +130,8 @@ const useDoorImage = (): UseDoorImageReturn => {
   }, [fetchedUrl]);
 
   const isInitialLoad = readySrc === null;
-  const isUpdating = pending;
+  // don't spin over the cached default while the initial fresh fetch runs — only for real updates
+  const isUpdating = pending && freshLoaded;
 
   return { doorImage: readySrc, isInitialLoad, isUpdating, isError };
 };

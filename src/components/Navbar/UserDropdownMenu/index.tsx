@@ -76,7 +76,7 @@ const UserDropdownMenu: React.FC<UserDropdownMenuProps> = ({
     <>
       <Dropdown
         trigger={
-          <span className="flex items-center justify-center w-9 h-9 rounded-lg cursor-pointer text-primary-grey-dark hover:bg-primary-grey-lightest hover:text-primary-green transition-colors">
+          <span className="flex items-center justify-center w-9 h-9 rounded-lg cursor-pointer text-white/85 hover:bg-white/10 hover:text-white transition-colors">
             <FontAwesomeIcon icon={faGear} size="lg" />
           </span>
         }
@@ -99,7 +99,7 @@ const UserDropdownMenu: React.FC<UserDropdownMenuProps> = ({
   ) : (
     <span
       onClick={() => setIsLoginModalShown(true)}
-      className="flex items-center justify-center h-9 px-3.5 rounded-full cursor-pointer text-sm font-bold tracking-wide text-primary-grey-dark hover:bg-primary-grey-lightest hover:text-primary-green transition-colors"
+      className="flex items-center justify-center h-9 px-3.5 rounded-full cursor-pointer text-sm font-bold tracking-wide text-white/85 hover:bg-white/10 hover:text-white transition-colors"
     >
       B2B
     </span>

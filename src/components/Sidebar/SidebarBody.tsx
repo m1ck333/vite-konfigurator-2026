@@ -14,10 +14,10 @@ export const SidebarBody: React.FC<SidebarBodyProps> = ({
   handleItemClick,
 }) => {
   return (
-    <nav className="flex flex-1 min-h-0">
+    <nav className="flex h-full min-h-0 w-full">
       <ScrollFade
-        wrapperClassName="w-[76px] sm:w-[92px] shrink-0 border-r border-white/40 bg-white/15"
-        fadeColorClass="from-white/40"
+        wrapperClassName="w-[184px] shrink-0 border-r border-[#1b1b1b] bg-[#0d0d0d]"
+        fadeColorClass="from-[#0d0d0d]"
       >
         <SidebarNavigation
           handleItemClick={handleItemClick}
@@ -25,9 +25,9 @@ export const SidebarBody: React.FC<SidebarBodyProps> = ({
         />
       </ScrollFade>
       <ScrollFade
-        wrapperClassName="flex-1 bg-white/5"
-        className="py-3 px-4"
-        fadeColorClass="from-white/30"
+        wrapperClassName="min-w-0 flex-1 bg-white md:w-[400px] md:flex-none"
+        className="px-6 py-6"
+        fadeColorClass="from-white"
       >
         <SidebarContent activeItem={activeItem} />
       </ScrollFade>

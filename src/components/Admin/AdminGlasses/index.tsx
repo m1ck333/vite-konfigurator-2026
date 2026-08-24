@@ -126,7 +126,7 @@ const AdminGlasses: React.FC = () => {
     <div className="flex flex-col gap-3 p-4">
       <SectionHeading>Stakla</SectionHeading>
 
-      <div className="flex justify-center">
+      <div className="flex justify-end">
         <Button
           icon={faPlus}
           onClick={handleAddNewClick}

@@ -40,7 +40,7 @@ const AdditionalNavItems = () => {
             className={`no-underline ${
               isActive(item.path)
                 ? "text-primary-green font-semibold"
-                : "text-black"
+                : "text-white/80 hover:text-white"
             }`}
           >
             {item.label}
@@ -52,7 +52,7 @@ const AdditionalNavItems = () => {
       <div className="block sm:hidden">
         <Dropdown
           trigger={
-            <span className="flex items-center justify-center w-9 h-9 rounded-lg cursor-pointer text-primary-grey-dark hover:bg-primary-grey-lightest hover:text-primary-green transition-colors">
+            <span className="flex items-center justify-center w-9 h-9 rounded-lg cursor-pointer text-white/80 hover:bg-white/10 hover:text-white transition-colors">
               <FontAwesomeIcon icon={faBars} size="lg" />
             </span>
           }

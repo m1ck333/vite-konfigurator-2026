@@ -95,8 +95,20 @@ const Houses: React.FC = () => {
     }
   };
 
-  if (isLoading) return <SkeletonGrid columns={1} cardClassName="h-48" />;
-  if (isError) return <Error />;
+  if (isLoading)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-house")}</SectionHeading>
+        <SkeletonGrid columns={1} cardClassName="h-48" />
+      </>
+    );
+  if (isError)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-house")}</SectionHeading>
+        <Error />
+      </>
+    );
 
   return (
     <>

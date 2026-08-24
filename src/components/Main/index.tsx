@@ -7,7 +7,7 @@ import Error from "../ui/Error";
 import Loading from "../ui/Loading";
 import { useTranslation } from "react-i18next";
 import RndDoorImage from "./RndDoorImage";
-import WallScene from "./WallScene";
+import NicheScene from "./NicheScene";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useScreenshot } from "../../hooks/useScreenshot";
@@ -114,7 +114,7 @@ const Main = ({ isSidebarOpen, hideSidebar }: MainProps) => {
     /* the door on a real house facade; the facade shows immediately (spinner over the door area
        on first load / while a new door is fetched — no skeleton, no blur) */
     content = (
-      <WallScene
+      <NicheScene
         doorImage={doorImage}
         doorType={doorType}
         interior={!!interiorDoorShown}
@@ -151,7 +151,7 @@ const Main = ({ isSidebarOpen, hideSidebar }: MainProps) => {
             type="button"
             onClick={handleSaveScreenshot}
             disabled={isCapturing}
-            className="glass-btn inline-flex items-center gap-2 h-11 rounded-full px-4 text-sm font-medium text-primary-grey-dark hover:text-primary-green transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#2a2a2ae6] px-5 text-sm font-medium text-white shadow-lg shadow-black/30 backdrop-blur-md transition-colors hover:bg-black focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <FontAwesomeIcon
               icon={isCapturing ? faSpinner : faSave}

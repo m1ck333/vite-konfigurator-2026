@@ -5,6 +5,7 @@ import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import Select from "../../../ui/Select";
 import GlassGrid from "./GlassGrid";
 import Selectable from "../../../ui/Selectable";
+import { SkeletonGrid } from "../../../ui/Skeleton";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../app/store";
 import { setActiveDropDownItem } from "../../../../features/sidebar/sidebarSlice";
@@ -33,6 +34,7 @@ const Glass = () => {
     hasInDoorGlass,
     selectedGlasses,
     dispatchSelectedGlass,
+    isLoading,
   } = useEquipmentGlasses();
   const selectOptions: SelectOption[] = [
     hasSideGlass ? { value: "sideglasses", label: t("side-glasses") } : null,
@@ -63,6 +65,26 @@ const Glass = () => {
     if (!value) return;
     dispatch(setActiveDropDownItem({ field: "glass", value }));
   };
+  // While the glass data loads, keep the heading + selector on screen and skeleton only the grid, so
+  // nothing pops in after the fact.
+  if (isLoading)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-glass")}</SectionHeading>
+        {selectOptions.length > 0 ? (
+          <Select
+            options={selectOptions}
+            value={chosenSelect}
+            onChange={handleSelectChange}
+            classNames="mb-6"
+          />
+        ) : (
+          <div className="mb-6 h-11 w-full animate-pulse rounded-lg bg-primary-grey-lightest" />
+        )}
+        <SkeletonGrid />
+      </>
+    );
+
   return selectOptions && selectOptions.length > 0 ? (
     <>
       <SectionHeading>{t("choose-door-glass")}</SectionHeading>

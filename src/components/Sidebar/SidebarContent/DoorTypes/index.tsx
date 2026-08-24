@@ -25,7 +25,7 @@ const DoorTypes = () => {
     <>
       <SectionHeading>{t("choose-door-type")}</SectionHeading>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {doorTypes.map((doorType, index) => {
           const isSelected = currentDoorType === doorType.text;
 
@@ -38,8 +38,11 @@ const DoorTypes = () => {
               <img
                 src={doorType.icon}
                 alt={t(doorType.text)}
-                className="object-contain h-40 md:h-28 p-2"
+                className="h-24 w-auto object-contain"
               />
+              <span className="mt-2.5 text-center text-[13px] font-medium leading-tight">
+                {t(doorType.text)}
+              </span>
             </Selectable>
           );
         })}

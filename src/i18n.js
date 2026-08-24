@@ -12,6 +12,11 @@ i18n
     preload: ["en", "sr"],
     fallbackLng: "en", // Fallback language
     supportedLngs: ["en", "sr"], // Explicitly declare supported languages
+    backend: {
+      // cache-bust the translation JSON so the browser never serves a stale copy
+      // (new keys were showing as raw keys until a hard refresh otherwise)
+      queryStringParams: { v: `${Date.now()}` },
+    },
     interpolation: {
       escapeValue: false,
     },

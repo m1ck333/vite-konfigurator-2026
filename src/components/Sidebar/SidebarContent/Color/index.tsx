@@ -84,8 +84,30 @@ const Colors = () => {
     dispatch(setActiveDropDownItem({ field: "color", value }));
   };
 
-  if (isLoading) return <SkeletonGrid />;
-  if (isError) return <Error />;
+  if (isLoading)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-color")}</SectionHeading>
+        {colorTypeOptions.length > 0 ? (
+          <Select
+            options={colorTypeOptions}
+            value={colorType}
+            onChange={handleColorTypeChange}
+            classNames="mb-6"
+          />
+        ) : (
+          <div className="mb-6 h-11 w-full animate-pulse rounded-lg bg-primary-grey-lightest" />
+        )}
+        <SkeletonGrid />
+      </>
+    );
+  if (isError)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-color")}</SectionHeading>
+        <Error />
+      </>
+    );
 
   return (
     <>

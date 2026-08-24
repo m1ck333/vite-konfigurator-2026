@@ -48,6 +48,8 @@
   "width": "width",
   "height": "height",
   "configurator": "Configurator",
+  "view-exterior": "Exterior",
+  "view-interior": "Interior",
   "inquiry": "Inquiry",
   "logo": "Logo",
   "yourEmail": "Your email address",

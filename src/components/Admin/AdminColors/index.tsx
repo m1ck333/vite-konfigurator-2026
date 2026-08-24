@@ -154,7 +154,7 @@ const AdminColors: React.FC = () => {
 
         {activeTab === "colors" && (
           <>
-            <div className="flex justify-center">
+            <div className="flex justify-end">
               <Button
                 icon={faPlus}
                 onClick={handleAddNewClick}

@@ -25,7 +25,7 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
       <div className={`flex flex-col h-screen`}>
         <Navbar additionalFields={<AdditionalNavItems />} />
 
-        <>{children}</>
+        <main className="flex-1 overflow-auto bg-primary-light">{children}</main>
       </div>
     </>
   );

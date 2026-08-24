@@ -18,7 +18,13 @@ const Systems = () => {
     (state: RootState) => state.configuration["system-name"]
   );
 
-  if (isLoading) return <SkeletonGrid />;
+  if (isLoading)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-system")}</SectionHeading>
+        <SkeletonGrid />
+      </>
+    );
   if (error) return <Error message={t("error-occurred")} />;
 
   const handleSelectSystem = (name: string, id: number) => {

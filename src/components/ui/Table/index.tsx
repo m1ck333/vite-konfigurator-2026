@@ -29,12 +29,15 @@ export interface TableProps<T> {
 
 const Table = <T extends { [key: string]: any }>({
   columns,
-  data,
+  data: rawData,
   actionButtons,
   striped,
   pagination,
 }: TableProps<T>) => {
   const { t } = useTranslation();
+  // guard against a non-array (e.g. an API that returned an error object or {data:[…]}) so a bad
+  // response renders an empty table instead of crashing the whole page.
+  const data = (Array.isArray(rawData) ? rawData : []) as T[];
   const [sortConfig, setSortConfig] = useState<{
     key: string;
     direction: "asc" | "desc";

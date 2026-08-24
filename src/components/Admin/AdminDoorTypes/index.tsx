@@ -140,7 +140,7 @@ const AdminDoorTypes: React.FC = () => {
         onTabChange={setActiveTab}
       />
 
-      <div className="flex justify-center">
+      <div className="flex justify-end">
         <Button
           icon={faPlus}
           onClick={handleAddNewClick}

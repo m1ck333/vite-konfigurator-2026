@@ -6,16 +6,14 @@ interface SectionHeadingProps {
 }
 
 /**
- * Modern configurator section heading: a small green accent bar above a
- * tight, bold title. Replaces the old gradient "chip pill" headings.
+ * Configurator section heading: a tight, bold title.
  */
 const SectionHeading: React.FC<SectionHeadingProps> = ({
   children,
   className = "",
 }) => (
   <div className={`mb-6 ${className}`}>
-    <div className="h-1 w-10 rounded-full bg-primary-green mb-2.5" />
-    <h2 className="text-xl font-bold tracking-tight text-primary-green-dark leading-snug">
+    <h2 className="text-xl font-bold leading-snug tracking-tight text-primary-grey-dark">
       {children}
     </h2>
   </div>

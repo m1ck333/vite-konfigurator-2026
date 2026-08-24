@@ -1,54 +1,44 @@
 import { useTranslation } from "react-i18next";
+import Dropdown, { DropdownItem } from "../../ui/Dropdown";
 import srFlag from "../../../assets/images/country-flags/sr-flag.png";
 import enFlag from "../../../assets/images/country-flags/en-flag.png";
-import Dropdown, { DropdownItem } from "../../ui/Dropdown";
+
+const flagOption = (flag: string, code: string) => (
+  <span className="flex items-center gap-2.5 pr-3 text-sm font-medium">
+    <img src={flag} alt="" className="h-4 w-5 rounded-sm object-cover" />
+    {code}
+  </span>
+);
 
 const NavbarLang = () => {
   const { i18n } = useTranslation();
 
-  const currentLang = i18n.resolvedLanguage || i18n.language || "en";
-  const currentFlag = currentLang.startsWith("sr") ? srFlag : enFlag;
+  const currentLang = (i18n.resolvedLanguage || i18n.language || "en").startsWith(
+    "sr"
+  )
+    ? "sr"
+    : "en";
 
-  const changeLanguage = (language: string) => {
-    i18n.changeLanguage(language);
-  };
+  const changeLanguage = (language: string) => i18n.changeLanguage(language);
 
   const languageItems: DropdownItem[] = [
     {
-      key: "en",
-      label: (
-        <div className="flex items-center w-max">
-          <span className="text-md">En</span>
-          <span className="ml-2">
-            <img src={enFlag} className="w-5 h-5" alt="English flag" />
-          </span>
-        </div>
-      ),
-      action: () => changeLanguage("en"),
+      key: "sr",
+      label: flagOption(srFlag, "SR"),
+      action: () => changeLanguage("sr"),
     },
     {
-      key: "sr",
-      label: (
-        <div className="flex items-center">
-          <span className="text-md">Sr</span>
-          <span className="ml-2">
-            <img src={srFlag} className="w-5 h-5" alt="Serbian flag" />
-          </span>
-        </div>
-      ),
-      action: () => changeLanguage("sr"),
+      key: "en",
+      label: flagOption(enFlag, "EN"),
+      action: () => changeLanguage("en"),
     },
   ];
 
   return (
     <Dropdown
       trigger={
-        <span className="flex items-center justify-center w-9 h-9 rounded-full cursor-pointer transition-transform hover:scale-105">
-          <img
-            src={currentFlag}
-            className="w-6 h-6 rounded-full object-cover ring-1 ring-black/10"
-            alt={`${currentLang} flag`}
-          />
+        <span className="flex h-9 cursor-pointer items-center justify-center rounded-md px-2.5 text-sm font-medium tracking-wide text-white/85 transition-colors hover:bg-white/10 hover:text-white">
+          {currentLang.toUpperCase()}
         </span>
       }
       items={languageItems}

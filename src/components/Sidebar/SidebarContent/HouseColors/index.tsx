@@ -49,8 +49,20 @@ const HouseColor: React.FC = () => {
     );
   };
 
-  if (isLoading) return <SkeletonGrid />;
-  if (isError) return <Error message="Error loading house colors" />;
+  if (isLoading)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-house-color")}</SectionHeading>
+        <SkeletonGrid />
+      </>
+    );
+  if (isError)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-house-color")}</SectionHeading>
+        <Error message="Error loading house colors" />
+      </>
+    );
 
   return (
     <>

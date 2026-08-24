@@ -22,52 +22,38 @@ const SidebarNavigationItem: React.FC<SidebarNavigationItemProps> = ({
         onClick={onClick}
         aria-current={isActive ? "step" : undefined}
         title={t(text)}
-        className={`group relative w-full flex flex-col items-center gap-1.5 px-1.5 py-3 transition-colors duration-200 focus:outline-none ${
-          isActive ? "bg-white" : "hover:bg-white/70"
+        className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-3.5 text-sm font-medium transition-colors focus:outline-none ${
+          isActive
+            ? "bg-[#141619] text-primary-green"
+            : "text-[#9a9ea3] hover:bg-white/5 hover:text-white"
         }`}
       >
-        {/* active accent bar */}
+        {/* active green accent bar at the rail's left edge */}
         <span
-          className={`absolute left-0 top-2 bottom-2 w-1 rounded-r-full transition-all duration-200 ${
+          className={`absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full transition-colors ${
             isActive ? "bg-primary-green" : "bg-transparent"
           }`}
         />
 
-        {/* icon tile */}
+        {/* masked line icon — tints via background-color */}
         <span
-          className={`relative flex items-center justify-center w-11 h-11 rounded-xl border transition-all duration-200 group-hover:scale-105 group-active:scale-95 ${
-            isActive
-              ? "bg-primary-green/10 border-primary-green shadow-sm"
-              : "bg-white border-primary-grey-lightest group-hover:border-primary-green-light"
+          aria-hidden
+          className={`h-[22px] w-[22px] shrink-0 transition-colors ${
+            isActive ? "bg-primary-green" : "bg-[#9a9ea3] group-hover:bg-white"
           }`}
-        >
-          <span
-            aria-hidden
-            className={`h-5 w-5 transition-colors duration-200 ${
-              isActive
-                ? "bg-primary-green"
-                : "bg-primary-grey-dark group-hover:bg-primary-green-light"
-            }`}
-            style={{
-              maskImage: `url(${icon})`,
-              WebkitMaskImage: `url(${icon})`,
-              maskRepeat: "no-repeat",
-              WebkitMaskRepeat: "no-repeat",
-              maskPosition: "center",
-              WebkitMaskPosition: "center",
-              maskSize: "contain",
-              WebkitMaskSize: "contain",
-            }}
-          />
-        </span>
+          style={{
+            maskImage: `url(${icon})`,
+            WebkitMaskImage: `url(${icon})`,
+            maskRepeat: "no-repeat",
+            WebkitMaskRepeat: "no-repeat",
+            maskPosition: "center",
+            WebkitMaskPosition: "center",
+            maskSize: "contain",
+            WebkitMaskSize: "contain",
+          }}
+        />
 
-        <span
-          className={`text-[11px] leading-tight text-center font-medium transition-colors ${
-            isActive ? "text-primary-green-dark" : "text-primary-grey-dark"
-          }`}
-        >
-          {t(text)}
-        </span>
+        <span className="whitespace-nowrap">{t(text)}</span>
       </button>
     </li>
   );

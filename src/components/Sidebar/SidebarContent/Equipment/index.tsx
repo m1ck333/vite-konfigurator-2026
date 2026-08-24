@@ -201,8 +201,30 @@ const Equipment = () => {
         return null;
     }
   };
-  if (isLoadingCategories || isLoadingEquipment) return <SkeletonGrid />;
-  if (isErrorCategories || isErrorEquipment) return <Error />;
+  if (isLoadingCategories || isLoadingEquipment)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-equipment")}</SectionHeading>
+        {selectOptions.length > 0 ? (
+          <Select
+            options={selectOptions}
+            value={selectedDropDownItem}
+            onChange={(value: string | null) => handleSelectDropDownItem(value)}
+            classNames="mb-2"
+          />
+        ) : (
+          <div className="mb-2 h-11 w-full animate-pulse rounded-lg bg-primary-grey-lightest" />
+        )}
+        <SkeletonGrid />
+      </>
+    );
+  if (isErrorCategories || isErrorEquipment)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-equipment")}</SectionHeading>
+        <Error />
+      </>
+    );
 
   return (
     <>

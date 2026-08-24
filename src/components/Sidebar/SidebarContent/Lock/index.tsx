@@ -19,8 +19,20 @@ const Lock = () => {
     (state: RootState) => state.configuration.equipment.lock.id
   );
 
-  if (isLoading) return <SkeletonGrid />;
-  if (isError) return <Error message={t("error-occurred")} />;
+  if (isLoading)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-lock")}</SectionHeading>
+        <SkeletonGrid />
+      </>
+    );
+  if (isError)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-lock")}</SectionHeading>
+        <Error message={t("error-occurred")} />
+      </>
+    );
 
   if (!locks || locks.length === 0) {
     return <Error message={t("locks-not-found")} />;

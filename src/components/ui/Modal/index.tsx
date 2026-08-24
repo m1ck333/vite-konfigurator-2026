@@ -60,7 +60,7 @@ const Modal: React.FC<ModalProps> = ({
     >
       <div
         ref={modalRef}
-        className={`glass-modal relative rounded-2xl p-6 w-full ${MAX_WIDTH_SIZES[size]} flex flex-col max-h-[90vh] animate-fade-in-up`}
+        className={`glass-modal relative rounded-2xl w-full ${MAX_WIDTH_SIZES[size]} flex flex-col max-h-[90vh] animate-fade-in-up`}
       >
         {/* protruding close "pimple" on the modal's top-right corner */}
         <button
@@ -72,13 +72,13 @@ const Modal: React.FC<ModalProps> = ({
         </button>
 
         {title && (
-          <div className="mb-4 pb-3 border-b border-primary-grey-lightest">
-            <h3 className="text-lg font-bold text-primary-green-dark">
-              {title}
-            </h3>
+          <div className="rounded-t-2xl bg-[#0d0d0d] px-6 py-4">
+            <h3 className="text-lg font-bold text-white">{title}</h3>
           </div>
         )}
-        <div className="overflow-y-auto flex-grow no-scrollbar">{children}</div>
+        <div className={`overflow-y-auto flex-grow no-scrollbar px-6 pb-6 ${title ? "pt-5" : "pt-6"}`}>
+          {children}
+        </div>
       </div>
     </div>
   ) : null;

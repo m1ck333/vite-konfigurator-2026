@@ -17,7 +17,7 @@ const Selectable: React.FC<SelectableProps> = ({
 }) => {
   const selectedClass = isSelected
     ? "border-primary-green bg-white shadow-[0_12px_30px_-10px_rgba(5,130,116,0.55)]"
-    : "border-transparent bg-white shadow-[0_2px_12px_-4px_rgba(0,0,0,0.1)] hover:shadow-[0_16px_32px_-12px_rgba(0,0,0,0.22)] hover:border-primary-green-light";
+    : "border-primary-grey-lightest bg-white hover:border-primary-green-light hover:shadow-[0_10px_24px_-12px_rgba(0,0,0,0.18)]";
   const textClass = isSelected
     ? "text-primary-green-dark"
     : "text-primary-grey-dark";
@@ -30,7 +30,7 @@ const Selectable: React.FC<SelectableProps> = ({
 
   return (
     <div
-      className={`relative cursor-pointer rounded-2xl border-2 py-5 px-3 flex flex-col items-center transition-all duration-200 overflow-hidden w-full hover:-translate-y-1 ${selectedClass} ${textClass} ${classNames}`}
+      className={`relative flex w-full cursor-pointer flex-col items-center overflow-hidden rounded-lg border py-4 px-3 transition-all duration-200 hover:-translate-y-0.5 ${selectedClass} ${textClass} ${classNames}`}
       onClick={onClick}
     >
       {children}

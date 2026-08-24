@@ -2,8 +2,7 @@ import React, { ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
 
 import NavbarLang from "./NavbarLang";
-import algreenLogo from "../../assets/images/algreen-logo-green.png";
-import algreenLogoShort from "../../assets/images/algreen-logo-short.png";
+import algreenLogo from "../../assets/images/algreen-logo.png";
 import { NAVBAR_HEIGHT } from "../../constants";
 import LoginModal from "./LoginModal";
 import UserDropdownMenu from "./UserDropdownMenu";
@@ -21,7 +20,7 @@ const Navbar: React.FC<NavbarProps> = ({ additionalFields }) => {
   return (
     <>
       <nav
-        className="relative z-50 bg-white px-4 sm:px-6 border-b border-primary-grey-lightest shadow-sm"
+        className="relative z-50 bg-[#0d0d0d] px-4 sm:px-6 text-white"
         style={{
           height: `${NAVBAR_HEIGHT}px`,
         }}
@@ -29,16 +28,7 @@ const Navbar: React.FC<NavbarProps> = ({ additionalFields }) => {
         <div className="w-full h-full flex justify-between items-center">
           {loggedUser?.role === "admin" || !loggedUser ? (
             <Link to="/">
-              <div className="hidden sm:block">
-                <img src={algreenLogo} alt="Algreen logo" className="h-10" />
-              </div>
-              <div className="block sm:hidden">
-                <img
-                  src={algreenLogoShort}
-                  alt="Algreen logo"
-                  className="h-10"
-                />
-              </div>
+              <img src={algreenLogo} alt="Algreen" className="h-7 brightness-0 invert" />
             </Link>
           ) : (
             <div />

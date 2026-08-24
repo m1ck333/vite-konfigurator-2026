@@ -13,7 +13,7 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   handleItemClick,
   activeItem,
 }) => (
-  <ul className="flex flex-col min-h-full py-2">
+  <ul className="flex min-h-full flex-col gap-0.5 px-2 py-3">
     {items.map((item) => (
       <SidebarItem
         key={item.text}

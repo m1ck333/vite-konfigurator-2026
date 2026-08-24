@@ -152,8 +152,30 @@ const DoorModel = () => {
     dispatch(setActiveDropDownItem({ field: "model", value }));
   };
 
-  if (isLoading) return <SkeletonGrid />;
-  if (isError) return <Error message={t("error-occurred")} />;
+  if (isLoading)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-model")}</SectionHeading>
+        {selectOptions.length > 0 ? (
+          <Select
+            options={selectOptions}
+            value={selectedDropDownItem}
+            onChange={(value) => handleSelectDropDownItem(value)}
+            classNames="mb-4"
+          />
+        ) : (
+          <div className="mb-4 h-11 w-full animate-pulse rounded-lg bg-primary-grey-lightest" />
+        )}
+        <SkeletonGrid />
+      </>
+    );
+  if (isError)
+    return (
+      <>
+        <SectionHeading>{t("choose-door-model")}</SectionHeading>
+        <Error message={t("error-occurred")} />
+      </>
+    );
 
   return (
     <>

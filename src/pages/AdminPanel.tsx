@@ -15,7 +15,7 @@ const AdminPanel: React.FC = () => {
 
   return (
     <>
-      <nav className="flex flex-wrap gap-1 bg-white px-4 border-b border-primary-grey-lightest shadow-sm">
+      <nav className="flex flex-wrap gap-1 bg-[#0d0d0d] px-4">
         {subNavData.map((item, index) => (
           <button
             key={index}
@@ -23,8 +23,8 @@ const AdminPanel: React.FC = () => {
             disabled={item.disabled}
             className={`relative px-3 py-2.5 text-sm font-medium transition-colors focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed ${
               activeId === index
-                ? "text-primary-green-dark"
-                : "text-primary-grey-dark hover:text-primary-green"
+                ? "text-white"
+                : "text-white/60 hover:text-white"
             }`}
           >
             {item.name}
@@ -35,9 +35,7 @@ const AdminPanel: React.FC = () => {
         ))}
       </nav>
 
-      <div className="p-4 bg-primary-light min-h-[calc(100vh-72px-49px)]">
-        {activeComponent}
-      </div>
+      <div className="mx-auto w-full max-w-5xl p-4 md:p-6">{activeComponent}</div>
     </>
   );
 };

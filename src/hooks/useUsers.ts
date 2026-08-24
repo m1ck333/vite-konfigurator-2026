@@ -26,8 +26,11 @@ export const useUsers = (shouldFetch = true) => {
     }
   };
 
+  // BE returns { success, users: [...] }; older/other shapes may return a bare array — handle both.
+  const users = Array.isArray(data) ? data : data?.users ?? [];
+
   return {
-    users: data,
+    users,
     isLoading: !error && !data,
     isError: error,
     refetch,
