@@ -9,6 +9,7 @@ import Loading from "../components/ui/Loading";
 // configurator bundle (most visitors never open the admin panel).
 const AdminPanel = lazy(() => import("../pages/AdminPanel"));
 const UsersPage = lazy(() => import("../pages/UsersPage"));
+const InquiriesPage = lazy(() => import("../pages/InquiriesPage"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 const RouterConfig = () => (
@@ -37,6 +38,15 @@ const RouterConfig = () => (
           element={
             <AdminRoute>
               <UsersPage />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/inquiries"
+          element={
+            <AdminRoute>
+              <InquiriesPage />
             </AdminRoute>
           }
         />

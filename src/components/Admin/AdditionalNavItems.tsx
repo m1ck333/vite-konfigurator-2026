@@ -24,6 +24,12 @@ const AdditionalNavItems = () => {
       path: "/admin/users",
       action: () => navigate("/admin/users"),
     },
+    {
+      key: "inquiries",
+      label: t("inquiries"),
+      path: "/admin/inquiries",
+      action: () => navigate("/admin/inquiries"),
+    },
   ];
 
   const isActive = (path: string) => location.pathname === path;
