@@ -29,7 +29,21 @@ export const useInquiries = (shouldFetch = true) => {
     if (token) await mutate([key, token]);
   };
 
+  // Delete one or many inquiries (D1 row + stored door images), then refresh the list.
+  const deleteInquiries = async (ids: number[]) => {
+    if (!token || !ids.length) return;
+    await Promise.all(
+      ids.map((id) =>
+        fetch(`${process.env.REACT_APP_API_URL}/api/admin/inquiries/${id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      )
+    );
+    await refetch();
+  };
+
   const inquiries: Inquiry[] = Array.isArray(data) ? data : data?.inquiries ?? [];
 
-  return { inquiries, isLoading: !error && !data, isError: error, refetch };
+  return { inquiries, isLoading: !error && !data, isError: error, refetch, deleteInquiries };
 };
