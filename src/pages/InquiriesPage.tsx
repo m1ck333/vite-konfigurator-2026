@@ -78,6 +78,9 @@ const InquirySheet = React.forwardRef<
     [t("fullName"), inquiry.name],
     [t("email"), inquiry.email],
     [t("phone"), inquiry.phone],
+    [t("streetAndNumber"), inquiry.street],
+    [t("postalCode"), inquiry.postal_code],
+    [t("city"), inquiry.city],
     [t("message"), inquiry.message],
   ].filter(([, v]) => v) as [string, unknown][];
   return (

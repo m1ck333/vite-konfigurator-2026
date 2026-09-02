@@ -7,6 +7,9 @@ export interface Inquiry {
   name?: string | null;
   email?: string | null;
   phone?: string | null;
+  city?: string | null;
+  postal_code?: string | null;
+  street?: string | null;
   message?: string | null;
   config?: string | null; // JSON string of the configuration sections
   created_at?: string | null;
