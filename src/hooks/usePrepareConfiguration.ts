@@ -56,7 +56,6 @@ const usePrepareConfiguration = () => {
         title: translateValue("your-configuration", translateOnSerbian),
         data: translateKeys(
           {
-            "reference-number": "00000000", // TODO: Add reference number
             date: todayDate(),
             model: configuration["model-name"],
           },
