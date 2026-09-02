@@ -53,9 +53,15 @@ export const handleAuthApiResponse = async (
 
     if (errorData && errorData.messageTranslation) {
       messageKey = errorData.messageTranslation;
+    } else if (errorData && typeof errorData.error === "string") {
+      // Hono BE returns { error: "..." } (a plain string, not a translation key) — don't index into
+      // it (that yielded the first CHARACTER, e.g. "n" from "not found"). Show a generic message.
+      messageKey = "auth-messages.an-unknown-error-occurred";
     } else if (errorData) {
+      // Laravel validation shape: { field: ["message", ...] }.
       const firstKey: string = Object.keys(errorData)[0];
-      messageKey = errorData[firstKey][0];
+      const val = firstKey ? errorData[firstKey] : undefined;
+      if (Array.isArray(val) && typeof val[0] === "string") messageKey = val[0];
     }
     return { success: false, messageKey };
   }
