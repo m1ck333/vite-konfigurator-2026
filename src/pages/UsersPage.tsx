@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import SectionHeading from "../components/ui/SectionHeading";
 import Button from "../components/ui/Button";
 import { useUsers } from "../hooks/useUsers";
+import { isAdminRole } from "../features/user/userSlice";
 import Table, { TableColumn } from "../components/ui/Table";
 import Loading from "../components/ui/Loading";
 import Error from "../components/ui/Error";
@@ -18,6 +19,8 @@ import MyOffersModal from "../components/Navbar/MyOffersModal";
 const UsersPage: React.FC = () => {
   const { t } = useTranslation();
   const { users, isLoading, isError } = useUsers();
+  // Staff (admin/superadmin) accounts live on the superadmin-only Administratori page, not here.
+  const dealers = users.filter((u: User) => !isAdminRole(u.role));
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -112,7 +115,7 @@ const UsersPage: React.FC = () => {
         ) : isError ? (
           <Error />
         ) : (
-          <Table pagination striped columns={columns} data={users} />
+          <Table pagination striped columns={columns} data={dealers} />
         )}
       </div>
 

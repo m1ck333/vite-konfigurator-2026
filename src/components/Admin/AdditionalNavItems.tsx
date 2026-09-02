@@ -1,15 +1,18 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Dropdown from "../ui/Dropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import Button from "../ui/Button";
+import { selectUserData } from "../../features/user/userSlice";
 
 const AdditionalNavItems = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const isSuper = useSelector(selectUserData)?.role === "superadmin";
 
   const dropdownItems = [
     {
@@ -30,6 +33,17 @@ const AdditionalNavItems = () => {
       path: "/admin/inquiries",
       action: () => navigate("/admin/inquiries"),
     },
+    // Staff management is superadmin-only.
+    ...(isSuper
+      ? [
+          {
+            key: "administrators",
+            label: t("administrators"),
+            path: "/admin/admins",
+            action: () => navigate("/admin/admins"),
+          },
+        ]
+      : []),
   ];
 
   const isActive = (path: string) => location.pathname === path;

@@ -10,6 +10,7 @@ import Loading from "../components/ui/Loading";
 const AdminPanel = lazy(() => import("../pages/AdminPanel"));
 const UsersPage = lazy(() => import("../pages/UsersPage"));
 const InquiriesPage = lazy(() => import("../pages/InquiriesPage"));
+const AdminsPage = lazy(() => import("../pages/AdminsPage"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 const RouterConfig = () => (
@@ -47,6 +48,15 @@ const RouterConfig = () => (
           element={
             <AdminRoute>
               <InquiriesPage />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/admins"
+          element={
+            <AdminRoute>
+              <AdminsPage />
             </AdminRoute>
           }
         />

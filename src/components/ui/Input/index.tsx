@@ -19,6 +19,7 @@ interface InputProps {
   min?: number;
   max?: number;
   step?: number;
+  disabled?: boolean;
   onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
 }
 
