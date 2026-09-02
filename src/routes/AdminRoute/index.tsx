@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 
-import { selectUserData } from "../../features/user/userSlice";
+import { selectUserData, isAdminRole } from "../../features/user/userSlice";
 import Navbar from "../../components/Navbar";
 import AdditionalNavItems from "../../components/Admin/AdditionalNavItems";
 
@@ -14,7 +14,7 @@ interface AdminRouteProps {
 const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
   const userData = useSelector(selectUserData);
 
-  if (!userData || userData.role !== "admin") {
+  if (!userData || !isAdminRole(userData.role)) {
     return <Navigate to="/" replace state={{ redirected: true }} />;
   }
 

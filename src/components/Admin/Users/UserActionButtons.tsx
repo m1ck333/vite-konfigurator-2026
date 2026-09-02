@@ -4,6 +4,7 @@ import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 import { User } from "../../../types";
 import Button from "../../ui/Button";
+import { isAdminRole } from "../../../features/user/userSlice";
 
 interface UserActionButtonsProps {
   row: User;
@@ -18,14 +19,14 @@ const UserActionButtons: React.FC<UserActionButtonsProps> = ({
 }) => {
   return (
     <div className="flex space-x-2">
-      <Button onClick={() => onEdit(row)} disabled={row.role === "admin"}>
+      <Button onClick={() => onEdit(row)} disabled={isAdminRole(row.role)}>
         <FontAwesomeIcon icon={faPen} />
       </Button>
 
       <Button
         variant="danger"
         onClick={() => onDelete(row)}
-        disabled={row.role === "admin"}
+        disabled={isAdminRole(row.role)}
       >
         <FontAwesomeIcon icon={faTrash} />
       </Button>

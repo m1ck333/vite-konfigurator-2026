@@ -6,7 +6,7 @@ import algreenLogo from "../../assets/images/algreen-logo.png";
 import { NAVBAR_HEIGHT } from "../../constants";
 import LoginModal from "./LoginModal";
 import UserDropdownMenu from "./UserDropdownMenu";
-import { selectUserData } from "../../features/user/userSlice";
+import { selectUserData, isAdminRole } from "../../features/user/userSlice";
 import { useSelector } from "react-redux";
 
 interface NavbarProps {
@@ -26,7 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({ additionalFields }) => {
         }}
       >
         <div className="w-full h-full flex justify-between items-center">
-          {loggedUser?.role === "admin" || !loggedUser ? (
+          {isAdminRole(loggedUser?.role) || !loggedUser ? (
             <Link to="/">
               <img src={algreenLogo} alt="Algreen" className="h-7 brightness-0 invert" />
             </Link>

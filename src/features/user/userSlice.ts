@@ -240,4 +240,10 @@ export const selectUserError = (state: RootState) => state.user.error;
 export const selectUserData = (state: RootState) => state.user.userData;
 export const selectUserToken = (state: RootState) => state.user.token;
 
+// Both admin tiers get the admin panel + admin privileges. superadmin additionally has overrides
+// (e.g. unlock/delete any locked inquiry) enforced separately where they apply.
+export const isAdminRole = (role?: string | null): boolean =>
+  role === "admin" || role === "superadmin";
+export const selectIsAdmin = (state: RootState) => isAdminRole(state.user.userData?.role);
+
 export default userSlice.reducer;

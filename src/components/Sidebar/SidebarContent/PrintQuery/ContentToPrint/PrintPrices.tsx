@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../../../app/store";
 import { PriceState } from "../../../../../features/price/priceSlice";
 import { useTranslation } from "react-i18next";
-import { selectUserData } from "../../../../../features/user/userSlice";
+import { selectUserData, isAdminRole } from "../../../../../features/user/userSlice";
 
 const PrintPrices: React.FC = () => {
   const { t } = useTranslation();
@@ -71,7 +71,7 @@ const PrintPrices: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {loggedUser?.role === "admin" ? adminTableBody : userTableBody}
+          {isAdminRole(loggedUser?.role) ? adminTableBody : userTableBody}
         </tbody>
         <tfoot>
           <tr>

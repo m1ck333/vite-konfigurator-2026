@@ -11,6 +11,7 @@ import {
   logoutUser,
   selectIsLoggedIn,
   selectUserData,
+  isAdminRole,
 } from "../../../features/user/userSlice";
 import Dropdown, { DropdownItem } from "../../ui/Dropdown";
 import PersonalInfo from "./PersonalInfo";
@@ -27,7 +28,7 @@ const UserDropdownMenu: React.FC<UserDropdownMenuProps> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const isAdmin = useSelector(selectUserData)?.role === "admin";
+  const isAdmin = isAdminRole(useSelector(selectUserData)?.role);
 
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const [isPersonalInfoModalVisible, setIsPersonalInfoModalVisible] =
