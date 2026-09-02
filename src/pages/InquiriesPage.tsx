@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useReactToPrint } from "react-to-print";
-import { faPrint, faTrash, faEye } from "@fortawesome/free-solid-svg-icons";
+import { faPrint, faTrash, faEye, faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import SectionHeading from "../components/ui/SectionHeading";
 import Loading from "../components/ui/Loading";
@@ -10,8 +11,9 @@ import Error from "../components/ui/Error";
 import Button from "../components/ui/Button";
 import Checkbox from "../components/ui/Checkbox";
 import Modal from "../components/ui/Modal";
+import TextArea from "../components/ui/TextArea";
 import Table, { TableColumn } from "../components/ui/Table";
-import { selectUserToken } from "../features/user/userSlice";
+import { selectUserToken, selectUserData } from "../features/user/userSlice";
 import { useInquiries, Inquiry } from "../hooks/useInquiries";
 
 const API = process.env.REACT_APP_API_URL;
@@ -167,6 +169,14 @@ const DetailModal: React.FC<{ inquiry: Inquiry; onClose: () => void; t: (k: stri
 
   return (
     <Modal isOpen onClose={onClose} size="3xl" title={`${t("inquiry")} #${inquiry.id}`}>
+      {inquiry.locked_by && (
+        <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+          <FontAwesomeIcon icon={faLock} className="mr-2" />
+          {t("locked-by")}: <b>{inquiry.locked_by}</b>
+          {inquiry.locked_at ? ` · ${fmtDate(inquiry.locked_at)}` : ""}
+          {inquiry.lock_note && <div className="mt-1 italic">“{inquiry.lock_note}”</div>}
+        </div>
+      )}
       <div className="mb-3 flex justify-end">
         <Button variant="primary-green" size="sm" icon={faPrint} onClick={handlePrint}>
           {t("print-pdf")}
@@ -188,14 +198,22 @@ const DetailModal: React.FC<{ inquiry: Inquiry; onClose: () => void; t: (k: stri
 
 const InquiriesPage: React.FC = () => {
   const { t } = useTranslation();
-  const { inquiries, isLoading, isError, deleteInquiries } = useInquiries();
+  const { inquiries, isLoading, isError, deleteInquiries, lockInquiry, unlockInquiry } = useInquiries();
+  const me = useSelector(selectUserData);
+  const isSuper = me?.role === "superadmin";
+  const canUnlock = (row: Inquiry) => !!row.locked_by && (row.locked_by === me?.username || isSuper);
+
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [detail, setDetail] = useState<Inquiry | null>(null);
   const [pendingDelete, setPendingDelete] = useState<number[] | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [lockTarget, setLockTarget] = useState<Inquiry | null>(null);
+  const [lockNote, setLockNote] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  const allIds = useMemo(() => inquiries.map((i) => i.id), [inquiries]);
-  const allSelected = allIds.length > 0 && selected.size === allIds.length;
+  // Locked inquiries can't be deleted, so they're never bulk-selectable.
+  const selectableIds = useMemo(() => inquiries.filter((i) => !i.locked_by).map((i) => i.id), [inquiries]);
+  const allSelected = selectableIds.length > 0 && selectableIds.every((id) => selected.has(id));
 
   const toggle = (id: number) =>
     setSelected((prev) => {
@@ -203,7 +221,7 @@ const InquiriesPage: React.FC = () => {
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
-  const toggleAll = () => setSelected(allSelected ? new Set() : new Set(allIds));
+  const toggleAll = () => setSelected(allSelected ? new Set() : new Set(selectableIds));
 
   const confirmDelete = async () => {
     if (!pendingDelete) return;
@@ -221,15 +239,32 @@ const InquiriesPage: React.FC = () => {
     }
   };
 
+  const submitLock = async () => {
+    if (!lockTarget) return;
+    setBusy(true);
+    try {
+      await lockInquiry(lockTarget.id, lockNote.trim());
+    } finally {
+      setBusy(false);
+      setLockTarget(null);
+      setLockNote("");
+    }
+  };
+
   const columns: TableColumn[] = [
     {
       header: "",
       accessor: "select",
       sortable: false,
       filterable: false,
-      render: (row: Inquiry) => (
-        <Checkbox checked={selected.has(row.id)} onChange={() => toggle(row.id)} label="" />
-      ),
+      render: (row: Inquiry) =>
+        row.locked_by ? (
+          <span className="text-primary-grey-light" title={t("locked")}>
+            <FontAwesomeIcon icon={faLock} />
+          </span>
+        ) : (
+          <Checkbox checked={selected.has(row.id)} onChange={() => toggle(row.id)} label="" />
+        ),
     },
     { header: "#", accessor: "id", sortable: true, filterable: false },
     {
@@ -246,8 +281,33 @@ const InquiriesPage: React.FC = () => {
       filterable: true,
       render: (row: Inquiry) => row.name || "—",
     },
+    {
+      header: t("city"),
+      accessor: "city",
+      sortable: true,
+      filterable: true,
+      render: (row: Inquiry) => row.city || "—",
+    },
     { header: t("email"), accessor: "email", sortable: true, filterable: true },
     { header: t("phone"), accessor: "phone", sortable: false, filterable: false },
+    {
+      header: t("status"),
+      accessor: "locked_by",
+      sortable: true,
+      filterable: true,
+      render: (row: Inquiry) =>
+        row.locked_by ? (
+          <span
+            className="inline-flex items-center gap-1 text-amber-700"
+            title={row.lock_note || undefined}
+          >
+            <FontAwesomeIcon icon={faLock} />
+            {row.locked_by}
+          </span>
+        ) : (
+          <span className="text-primary-grey">—</span>
+        ),
+    },
     {
       header: t("actions"),
       accessor: "actions",
@@ -261,12 +321,34 @@ const InquiriesPage: React.FC = () => {
             className="text-primary-green hover:text-primary-green-dark"
             icon={faEye}
           />
-          <Button
-            variant="icon"
-            onClick={() => setPendingDelete([row.id])}
-            className="text-danger hover:text-danger-dark"
-            icon={faTrash}
-          />
+          {row.locked_by ? (
+            canUnlock(row) && (
+              <Button
+                variant="icon"
+                onClick={() => unlockInquiry(row.id)}
+                className="text-amber-600 hover:text-amber-800"
+                icon={faLockOpen}
+              />
+            )
+          ) : (
+            <>
+              <Button
+                variant="icon"
+                onClick={() => {
+                  setLockNote("");
+                  setLockTarget(row);
+                }}
+                className="text-amber-600 hover:text-amber-800"
+                icon={faLock}
+              />
+              <Button
+                variant="icon"
+                onClick={() => setPendingDelete([row.id])}
+                className="text-danger hover:text-danger-dark"
+                icon={faTrash}
+              />
+            </>
+          )}
         </div>
       ),
     },
@@ -286,7 +368,12 @@ const InquiriesPage: React.FC = () => {
         ) : (
           <>
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <Checkbox checked={allSelected} onChange={toggleAll} label={t("select-all")} />
+              <Checkbox
+                checked={allSelected}
+                onChange={toggleAll}
+                label={t("select-all")}
+                disabled={selectableIds.length === 0}
+              />
               {selected.size > 0 && (
                 <Button
                   variant="danger"
@@ -305,6 +392,27 @@ const InquiriesPage: React.FC = () => {
       </div>
 
       {detail && <DetailModal inquiry={detail} onClose={() => setDetail(null)} t={t} />}
+
+      {lockTarget && (
+        <Modal isOpen onClose={() => !busy && setLockTarget(null)} size="md" title={`${t("lock-action")} — #${lockTarget.id}`}>
+          <p className="mb-2 text-sm text-primary-grey-dark">{t("lock-note-prompt")}</p>
+          <TextArea
+            name="lock-note"
+            value={lockNote}
+            onChange={(e) => setLockNote(e.target.value)}
+            placeholder={t("lock-note-placeholder")}
+            rows={4}
+          />
+          <div className="mt-4 flex justify-end gap-2">
+            <Button variant="link" onClick={() => setLockTarget(null)} disabled={busy}>
+              {t("cancel")}
+            </Button>
+            <Button variant="primary-green" icon={faLock} onClick={submitLock} isLoading={busy}>
+              {t("lock-action")}
+            </Button>
+          </div>
+        </Modal>
+      )}
 
       {pendingDelete && (
         <Modal isOpen onClose={() => !deleting && setPendingDelete(null)} size="sm" title={t("delete")}>
