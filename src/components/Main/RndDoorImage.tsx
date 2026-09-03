@@ -6,7 +6,7 @@ import { NAVBAR_HEIGHT } from "../../constants";
 // index.css) so they never show in the exported screenshot. NO dashed frame/outline — that box
 // was the confusing part (Mile's feedback); resizing itself stays.
 const resizeHandleClass =
-  "door-resize-handle w-3 h-3 rounded-full absolute bg-white border-2 border-primary-green shadow-md opacity-0 transition-opacity duration-200";
+  "door-resize-handle w-2.5 h-2.5 rounded-full absolute bg-white border border-primary-green shadow-md opacity-0 transition-opacity duration-200";
 
 interface RndDoorImageProps {
   imageUrl: string | null;
