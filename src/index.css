@@ -132,20 +132,11 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Draggable door on the house preview — affordances only on hover so the
-   exported screenshot stays clean. */
+/* Draggable door on the house preview — just a move cursor, no frame or handles
+   (the dashed outline + handles confused customers). */
 .door-image-container {
   cursor: move;
   border-radius: 6px;
-  outline: 2px dashed transparent;
-  outline-offset: 6px;
-  transition: outline-color 0.2s ease;
-}
-.door-image-container:hover {
-  outline-color: rgba(5, 130, 116, 0.55);
-}
-.door-image-container:hover .door-resize-handle {
-  opacity: 1;
 }
 
 /* react-datepicker — brand theming (default is blue) */
