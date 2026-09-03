@@ -132,11 +132,14 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Draggable door on the house preview — just a move cursor, no frame or handles
-   (the dashed outline + handles confused customers). */
+/* Draggable/resizable door on the house preview. NO dashed frame (that box confused
+   customers); only small resize grips that appear on hover, so the exported screenshot stays clean. */
 .door-image-container {
   cursor: move;
   border-radius: 6px;
+}
+.door-image-container:hover .door-resize-handle {
+  opacity: 1;
 }
 
 /* react-datepicker — brand theming (default is blue) */
