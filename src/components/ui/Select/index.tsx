@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { useTranslation } from "react-i18next";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faCheck } from "@fortawesome/free-solid-svg-icons";
-import useOutsideClick from "../../../hooks/useOutsideClick";
 
 interface SelectOption {
   value: string | null;
@@ -28,11 +28,29 @@ const Select: React.FC<SelectProps> = ({
 }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [openUp, setOpenUp] = useState(false);
+  // The list is portaled to <body> with fixed positioning so it's never clipped by a scrolling
+  // ancestor (e.g. a Modal body with overflow-y-auto). Position is taken from the trigger on open.
+  const [pos, setPos] = useState<{ left: number; width: number; top?: number; bottom?: number }>();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
-  useOutsideClick(wrapperRef, () => setOpen(false));
+  // outside click = outside BOTH the trigger wrapper and the portaled list
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (wrapperRef.current?.contains(t) || listRef.current?.contains(t)) return;
+      setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   const allOptions: SelectOption[] = includeNoneOption
     ? [{ value: "", label: `--- ${t("choose")} ---` }, ...options]
@@ -44,7 +62,14 @@ const Select: React.FC<SelectProps> = ({
     if (!open) {
       // open upward if there isn't enough room below
       const rect = triggerRef.current?.getBoundingClientRect();
-      if (rect) setOpenUp(window.innerHeight - rect.bottom < 240);
+      if (rect) {
+        const up = window.innerHeight - rect.bottom < 240 && rect.top > 240;
+        setPos({
+          left: rect.left,
+          width: rect.width,
+          ...(up ? { bottom: window.innerHeight - rect.top + 6 } : { top: rect.bottom + 6 }),
+        });
+      }
     }
     setOpen((o) => !o);
   };
@@ -54,11 +79,16 @@ const Select: React.FC<SelectProps> = ({
     // Close when an OUTER scroll container moves (so the dropdown doesn't
     // detach from its trigger) — but ignore scrolling inside the list itself.
     const onScroll = (e: Event) => {
-      if (wrapperRef.current?.contains(e.target as Node)) return;
+      if (listRef.current?.contains(e.target as Node)) return;
       setOpen(false);
     };
+    const onResize = () => setOpen(false);
     window.addEventListener("scroll", onScroll, true);
-    return () => window.removeEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", onResize);
+    };
   }, [open]);
 
   return (
@@ -86,11 +116,11 @@ const Select: React.FC<SelectProps> = ({
         />
       </button>
 
-      {open && (
+      {open && pos && ReactDOM.createPortal(
         <div
-          className={`glass-modal absolute z-50 left-0 right-0 max-h-60 overflow-y-auto no-scrollbar rounded-xl py-1 animate-fade-in-up ${
-            openUp ? "bottom-full mb-1.5" : "top-full mt-1.5"
-          }`}
+          ref={listRef}
+          style={{ position: "fixed", left: pos.left, width: pos.width, top: pos.top, bottom: pos.bottom }}
+          className="glass-modal z-[60] max-h-60 overflow-y-auto no-scrollbar rounded-xl py-1 animate-fade-in-up"
         >
           {allOptions.map((opt) => {
             const isSel = (opt.value ?? "") === (value ?? "");
@@ -118,7 +148,8 @@ const Select: React.FC<SelectProps> = ({
               </button>
             );
           })}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
